@@ -1,0 +1,1489 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Labs to Bullets: Lite</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='1' y='1' width='46' height='46' rx='12' fill='%230b1f55'/%3E%3Cpath d='M14 32h20a6.5 6.5 0 0 0 .6-13A9 9 0 0 0 17.3 17.6 7.2 7.2 0 0 0 14 32z' fill='none' stroke='%232cc4c0' stroke-width='2.6' stroke-linejoin='round'/%3E%3Cpath d='M19 22.5l3.5 3-3.5 3' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M25 28.5h5' stroke='%23fff' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f3f5fb; --surface:#ffffff; --surface-2:#eef2fa; --text:#101a3a; --muted:#59627c;
+  --border:#d9e0ee; --primary:#1d3f8f; --primary-hover:#173374; --on-primary:#fff;
+  --teal:#0e8f8f; --teal-soft:#e0f4f3; --purple:#6b5cc9; --purple-soft:#eeebfb;
+  --warn:#a34a0c; --warn-soft:#fdf0e3; --ok:#0d7a5f; --ok-soft:#e1f5ee; --danger:#b42318;
+  --shadow:0 1px 2px rgba(16,26,58,.06),0 4px 14px rgba(16,26,58,.05);
+  --radius:14px;
+  --header-grad:linear-gradient(120deg,#0b2263 0%,#16518a 52%,#5341a8 100%);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0a1024; --surface:#111a34; --surface-2:#172347; --text:#e5eaf7; --muted:#9ba6c3;
+    --border:#25325a; --primary:#5b8cff; --primary-hover:#7aa2ff; --on-primary:#06102b;
+    --teal:#35c6c1; --teal-soft:#0f2f3a; --purple:#a99df5; --purple-soft:#241f4a;
+    --warn:#f2a65a; --warn-soft:#33220f; --ok:#4fd1a5; --ok-soft:#0e2e27; --danger:#ff8a80;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0a1024; --surface:#111a34; --surface-2:#172347; --text:#e5eaf7; --muted:#9ba6c3;
+  --border:#25325a; --primary:#5b8cff; --primary-hover:#7aa2ff; --on-primary:#06102b;
+  --teal:#35c6c1; --teal-soft:#0f2f3a; --purple:#a99df5; --purple-soft:#241f4a;
+  --warn:#f2a65a; --warn-soft:#33220f; --ok:#4fd1a5; --ok-soft:#0e2e27; --danger:#ff8a80;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:15px/1.55 "Segoe UI",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+h1,h2,h3{line-height:1.25;margin:0}
+h2{font-size:1.2rem}
+h3{font-size:1.02rem}
+a{color:var(--primary)}
+button{font:inherit;color:inherit;cursor:pointer}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* Header */
+.app-header{background:var(--header-grad);color:#fff;padding-top:14px}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px}
+.brand h1{font-size:1.25rem;letter-spacing:.2px}
+.brand p{margin:0;font-size:.85rem;opacity:.82}
+.lite{display:inline-block;vertical-align:middle;margin-left:6px;font-size:.7rem;font-weight:700;letter-spacing:.6px;text-transform:uppercase;padding:2px 8px;border-radius:999px;background:rgba(53,198,193,.22);border:1px solid rgba(53,198,193,.55);color:#bff3f1}
+.lab-notes{border-top:1px dashed var(--border);padding-top:14px}
+.week-badge{font-size:.82rem;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.week-badge:empty{display:none}
+.tabs{display:flex;gap:4px;margin-top:12px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{background:none;border:0;color:rgba(255,255,255,.78);padding:10px 14px;border-radius:10px 10px 0 0;white-space:nowrap;font-weight:600;font-size:.92rem}
+.tabs button:hover{color:#fff;background:rgba(255,255,255,.08)}
+.tabs button[aria-current="page"]{background:var(--bg);color:var(--text)}
+
+main{padding-top:20px;padding-bottom:60px}
+.stack{display:flex;flex-direction:column;gap:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px;box-shadow:var(--shadow)}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.lede{margin:.3rem 0 0;color:var(--muted)}
+
+/* Fields */
+.field{display:block;margin:0 0 16px}
+.field:last-child{margin-bottom:0}
+.q{display:block;font-weight:600;margin-bottom:6px}
+.q b{color:var(--teal);margin-right:2px}
+.q .opt{font-weight:400;color:var(--muted);font-size:.85rem}
+.req{color:var(--danger);font-style:normal}
+.hint{display:block;font-size:.84rem;color:var(--muted);margin:-2px 0 6px}
+input[type=text],input[type=date],input[type=number],input:not([type]),select,textarea{
+  width:100%;font:inherit;color:var(--text);background:var(--surface-2);border:1px solid var(--border);
+  border-radius:10px;padding:9px 11px;transition:border-color .15s,box-shadow .15s}
+textarea{resize:vertical;min-height:44px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 25%,transparent)}
+.invalid{border-color:var(--danger)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--danger) 18%,transparent)!important}
+input.short{max-width:120px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--surface);color:var(--text);padding:9px 15px;border-radius:10px;font-weight:600;font-size:.92rem}
+.btn:hover{border-color:var(--teal)}
+.btn.primary{background:var(--primary);border-color:var(--primary);color:var(--on-primary)}
+.btn.primary:hover{background:var(--primary-hover)}
+.btn.small{padding:6px 11px;font-size:.84rem}
+.btn.danger{color:var(--danger)}
+.btn.ghost{background:none;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{color:var(--text)}
+[hidden]{display:none !important}
+.actions-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:1.3rem;line-height:1}
+.icon-btn:hover{border-color:var(--teal)}
+
+/* Day bar */
+.daybar{display:flex;align-items:center;gap:12px;padding:12px}
+.daybar-mid{flex:1;display:flex;align-items:center;gap:12px;flex-wrap:wrap;min-width:0}
+.daybar-mid input{max-width:180px}
+.daylabel{font-weight:600}
+.daylabel span{display:block;font-weight:400;color:var(--muted);font-size:.86rem}
+
+/* Pills */
+.pill{display:inline-block;font-size:.78rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--surface-2);color:var(--muted);white-space:nowrap}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.draft{background:var(--warn-soft);color:var(--warn)}
+.pill.purple{background:var(--purple-soft);color:var(--purple)}
+
+/* Lab card */
+.lab{border-left:4px solid var(--teal)}
+.lab-num{color:var(--teal)}
+details.examples{margin-top:8px;font-size:.88rem}
+details.examples summary{cursor:pointer;color:var(--teal);font-weight:600;width:max-content}
+details.examples ul{margin:8px 0 0;padding:10px 12px 10px 28px;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;color:var(--muted)}
+details.examples li{margin:3px 0}
+details.examples li b{color:var(--text)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 8px}
+.chip{border:1px solid var(--border);background:var(--surface);color:var(--muted);padding:5px 12px;border-radius:999px;font-size:.85rem;font-weight:600}
+.chip:hover{border-color:var(--purple);color:var(--text)}
+.chip.on{background:var(--purple-soft);border-color:var(--purple);color:var(--purple)}
+.tagbox{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:6px;margin-top:8px}
+.tagbox input{flex:1;min-width:min(180px,100%);border:0!important;background:transparent!important;box-shadow:none!important;padding:4px 6px}
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--teal-soft);color:var(--teal);font-size:.84rem;font-weight:600;padding:3px 4px 3px 10px;border-radius:999px}
+.tag button{border:0;background:none;color:inherit;font-size:1rem;line-height:1;padding:0 5px;border-radius:999px}
+.tag button:hover{background:color-mix(in srgb,var(--teal) 20%,transparent)}
+.tag.static{padding-right:10px}
+
+/* Notice */
+.notice{border-radius:12px;padding:12px 14px;background:var(--warn-soft);color:var(--text);border:1px solid color-mix(in srgb,var(--warn) 35%,transparent)}
+.notice.info{background:var(--purple-soft);border-color:color-mix(in srgb,var(--purple) 35%,transparent)}
+.notice.ok{background:var(--ok-soft);border-color:color-mix(in srgb,var(--ok) 35%,transparent)}
+.notice ul{margin:6px 0 0;padding-left:20px}
+
+/* Segmented */
+.seg{display:inline-flex;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:none;color:var(--muted);padding:7px 14px;border-radius:8px;font-weight:600;font-size:.88rem}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.linkbtn{background:none;border:0;padding:0;color:inherit;font:inherit;text-decoration:underline;cursor:pointer;text-align:left}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:end}
+.controls .field{margin:0;flex:1;min-width:min(200px,100%)}
+
+/* Prompt cards */
+.prompt-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;align-items:start}
+.pcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.pcard-top{display:flex;align-items:center;gap:10px}
+.pcard-icon{width:38px;height:38px;border-radius:10px;display:grid;place-items:center;flex:none}
+.pcard p{margin:0;color:var(--muted);font-size:.9rem}
+.pcard .actions-row{margin-top:auto;padding-top:6px}
+pre.prompt{white-space:pre-wrap;word-break:break-word;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px;font:13px/1.5 Consolas,"Cascadia Mono",ui-monospace,monospace;max-height:340px;overflow:auto;margin:6px 0 0}
+.c-teal{background:var(--teal-soft);color:var(--teal)}
+.c-purple{background:var(--purple-soft);color:var(--purple)}
+.c-blue{background:color-mix(in srgb,var(--primary) 14%,transparent);color:var(--primary)}
+.c-warn{background:var(--warn-soft);color:var(--warn)}
+
+/* Tiles */
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow)}
+.tile .num{font-size:1.6rem;font-weight:700;line-height:1.1}
+.tile .lbl{color:var(--muted);font-size:.84rem}
+.progress{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden;margin-top:8px}
+.progress > div{height:100%;background:linear-gradient(90deg,var(--teal),var(--purple));border-radius:99px}
+
+/* Timeline */
+details.week{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+details.week > summary{list-style:none;cursor:pointer;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+details.week > summary::-webkit-details-marker{display:none}
+details.week.current{border-color:var(--teal)}
+details.week.future{opacity:.62}
+.week-title{font-weight:700}
+.week-title span{font-weight:400;color:var(--muted);font-size:.86rem;margin-left:6px}
+.dayrows{border-top:1px solid var(--border)}
+.week-prodev{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:14px 16px;border:1px dashed var(--purple);border-radius:var(--radius);background:var(--purple-soft)}
+.week-prodev.current{border-style:solid}
+.prodev{border-top:4px solid var(--purple)}
+.dayrow{display:grid;grid-template-columns:110px 1fr auto auto;gap:10px;align-items:center;padding:10px 16px;border:0;border-bottom:1px solid var(--border);background:none;width:100%;text-align:left;color:var(--text)}
+.dayrow:last-child{border-bottom:0}
+.dayrow:hover{background:var(--surface-2)}
+.dayrow .c{color:var(--muted);font-size:.88rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media (max-width:560px){.dayrow{grid-template-columns:1fr auto}.dayrow .c,.dayrow .labs{display:none}}
+
+/* Bullets */
+.bullet-list{list-style:none;margin:12px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.bullet-list li{display:flex;gap:10px;align-items:flex-start;background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.bullet-list li .t{flex:1}
+.bullet-list li .t::before{content:"•";color:var(--teal);font-weight:700;margin-right:8px}
+
+.radio-row{display:flex;gap:8px;flex-wrap:wrap}
+.radio-row label{display:flex;align-items:center;gap:6px;border:1px solid var(--border);border-radius:10px;padding:6px 12px;cursor:pointer;background:var(--surface-2)}
+.radio-row input{accent-color:var(--teal)}
+.empty{text-align:center;padding:36px 18px}
+.empty h2{margin-bottom:6px}
+.welcome{max-width:620px;margin:10px auto}
+.welcome ul{padding-left:20px;color:var(--muted)}
+.charcount{font-size:.82rem;color:var(--muted)}
+.charcount.warn{color:var(--warn);font-weight:600}
+
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:10px 18px;border-radius:999px;font-weight:600;font-size:.9rem;opacity:0;pointer-events:none;transition:.25s;z-index:50;max-width:calc(100% - 32px);text-align:center}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+footer{color:var(--muted);font-size:.8rem;text-align:center;padding:0 16px 30px}
+
+/* Printable training record (used only when printing / saving as PDF) */
+#printArea{display:none}
+@media print{
+  @page{margin:16mm}
+  html,body{background:#fff!important}
+  body > *:not(#printArea){display:none!important}
+  #printArea{display:block!important;color:#1a1a1a;font:10.5pt/1.45 "Segoe UI",Calibri,Arial,sans-serif}
+  #printArea h1{font-size:22pt;color:#1d3f8f;margin:0 0 4pt}
+  #printArea .pr-head{border-bottom:2pt solid #0e8f8f;padding-bottom:8pt;margin-bottom:12pt}
+  #printArea .pr-head p{margin:2pt 0;color:#555}
+  #printArea h2{font-size:14pt;color:#1d3f8f;margin:14pt 0 6pt;border-bottom:1pt solid #d9e0ee;padding-bottom:3pt;break-after:avoid}
+  #printArea h2 span{font-size:10pt;color:#666;font-weight:400}
+  #printArea h3{font-size:11.5pt;color:#0e8f8f;margin:10pt 0 4pt;break-after:avoid}
+  #printArea h4{font-size:10.5pt;margin:0 0 3pt}
+  #printArea p{margin:3pt 0}
+  #printArea ul{margin:2pt 0 4pt;padding-left:16pt}
+  #printArea .pr-day{break-inside:avoid-page;margin-bottom:6pt}
+  #printArea .pr-lab{border-left:3pt solid #0e8f8f;padding:3pt 0 3pt 8pt;margin:6pt 0;break-inside:avoid}
+}
+</style>
+</head>
+<body>
+<header class="app-header">
+  <div class="wrap header-inner">
+    <div class="brand">
+      <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true">
+        <defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#35c6c1"/><stop offset="1" stop-color="#a99df5"/></linearGradient></defs>
+        <rect x="1" y="1" width="46" height="46" rx="12" fill="#0a1a4a" stroke="url(#lg)" stroke-width="1.6"/>
+        <path d="M14 30h20a6.5 6.5 0 0 0 .6-13A9 9 0 0 0 17.3 15.6 7.2 7.2 0 0 0 14 30z" fill="none" stroke="url(#lg)" stroke-width="2.4" stroke-linejoin="round"/>
+        <path d="M19 20.5l3.5 3-3.5 3" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M25 26.5h5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/>
+        <circle cx="15.5" cy="37" r="1.7" fill="#35c6c1"/>
+        <path d="M20 37h14" stroke="#a99df5" stroke-width="2.2" stroke-linecap="round"/>
+      </svg>
+      <div><h1>From Labs to Bullets<span class="lite">Lite</span></h1><p>Track your labs. Get hired.</p></div>
+    </div>
+    <div id="weekBadge" class="week-badge"></div>
+  </div>
+  <nav class="wrap tabs" id="tabs" aria-label="Main">
+    <button data-view="today">Today</button>
+    <button data-view="timeline">Timeline</button>
+    <button data-view="summaries">Summaries &amp; bullets</button>
+    <button data-view="settings">Settings &amp; backup</button>
+  </nav>
+</header>
+<main class="wrap" id="main"></main>
+<footer id="footNote">Your entries are stored only in this browser on this laptop. Use <b>Settings &amp; backup</b> to save a copy.</footer>
+<div id="toast" role="status" aria-live="polite"></div>
+<datalist id="techlist"></datalist>
+
+<script>
+(function(){
+'use strict';
+
+/* ---------- Constants ---------- */
+// Lite has its own storage key, auto-save database and file marker, so it never touches the
+// full From Labs to Bullets app's data, even when both are served from the same github.io origin.
+const KEY = 'fltb-lite.v1';
+const APP_ID = 'fltb-lite';
+const TOTAL_WEEKS = 17;
+const PRO_DEV_WEEK = 9;   // Professional Development week: not tracked in the app
+const DEFAULT_COURSES = [
+  'AZ-040: Automating Administration with PowerShell',
+  'GH-900: GitHub Foundations',
+  'Windows Server: Installation, Storage and Compute',
+  'Windows Server: Networking',
+  'Windows Server: Identity',
+  'Linux Administration Fundamentals (Ubuntu)',
+  'AZ-900: Azure Fundamentals',
+  'AI-901: Microsoft Azure AI Fundamentals',
+  'AZ-400: DevOps Solutions',
+  'MD-102: Endpoint Administrator',
+  'AZ-104: Azure Administrator',
+  'SC-300: Identity and Access Administrator'
+];
+const SEED_TECH = ['PowerShell','Azure CLI','Azure Portal','Azure Cloud Shell','Azure Virtual Machines','Azure Virtual Network','Network Security Groups','Azure Load Balancer','Azure DNS','Azure Storage','Azure Blob Storage','Azure Files','Azure Backup','Azure App Service','Azure Monitor','Log Analytics','Azure Policy','Azure RBAC','Azure Resource Manager','ARM templates','Bicep','Azure Key Vault','Microsoft Entra ID','Conditional Access','Multifactor authentication','Privileged Identity Management','Microsoft Intune','Windows Autopilot','Microsoft 365 admin center','Windows Server','Windows Admin Center','Server Manager','Active Directory Domain Services','Group Policy','DNS','DHCP','Hyper-V','Storage Spaces','Failover Clustering','iSCSI','Ubuntu','Bash','SSH','systemd','apt','Git','GitHub','GitHub Actions','Azure DevOps','Azure Pipelines','Azure Repos','Docker','Azure Container Instances','Azure Kubernetes Service','Azure AI services','Azure OpenAI','Microsoft Copilot'];
+const ACTIONS = ['Built','Configured','Deployed','Automated','Secured','Troubleshot','Installed','Managed','Monitored','Migrated'];
+
+/* ---------- Date helpers ---------- */
+const pad = n => String(n).padStart(2,'0');
+const iso = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const addDays = (s,n) => { const d = parse(s); d.setDate(d.getDate()+n); return iso(d); };
+const todayISO = () => iso(new Date());
+const mondayOf = s => { const d = parse(s); d.setDate(d.getDate() - ((d.getDay()+6)%7)); return iso(d); };
+const daysBetween = (a,b) => Math.round((parse(b)-parse(a))/864e5);
+const dow = s => parse(s).getDay();
+const fmt = (s,o) => parse(s).toLocaleDateString(undefined,o);
+const fmtShort = s => fmt(s,{weekday:'short',month:'short',day:'numeric'});
+const fmtLong = s => fmt(s,{weekday:'long',month:'long',day:'numeric',year:'numeric'});
+const fmtMD = s => fmt(s,{month:'short',day:'numeric'});
+function weekOf(s){
+  if(!S.settings.startDate) return null;
+  return Math.floor(daysBetween(mondayOf(S.settings.startDate), s)/7) + 1;
+}
+const weekStart = w => addDays(mondayOf(S.settings.startDate), (w-1)*7);
+const isProDev = s => weekOf(s) === PRO_DEV_WEEK;
+const isValidISO = s => /^\d{4}-\d{2}-\d{2}$/.test(s||'');
+
+/* ---------- Utilities ---------- */
+const $ = (s,r=document) => r.querySelector(s);
+const $$ = (s,r=document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clean = s => String(s ?? '').trim();
+const labsText = n => n === 1 ? '1 lab' : `${n} labs`;
+const linesOf = s => String(s||'').split(/\r?\n/).map(x=>x.replace(/^[-*•\s]+/,'').trim()).filter(Boolean);
+function linkify(text){
+  return esc(text).replace(/(https?:\/\/[^\s<]+)/g, u => `<a href="${u}" target="_blank" rel="noopener noreferrer">${u}</a>`);
+}
+let toastTimer;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer); toastTimer = setTimeout(()=>t.classList.remove('show'), 2600);
+}
+async function copyText(text){
+  try { await navigator.clipboard.writeText(text); toast('Copied! Paste it into your AI tool.'); return; } catch(e){}
+  const ta = document.createElement('textarea'); ta.value = text; ta.style.position='fixed'; ta.style.opacity='0';
+  document.body.appendChild(ta); ta.select();
+  try { document.execCommand('copy'); toast('Copied! Paste it into your AI tool.'); } catch(e){ toast('Copy failed. Select the text and press Ctrl+C.'); }
+  ta.remove();
+}
+
+/* ---------- Data ---------- */
+function fresh(){
+  return { app:APP_ID, version:1, settings:{ startDate:'', courses:DEFAULT_COURSES.slice(), lastCourse:'', lastBackup:null }, days:{}, bullets:[] };
+}
+function normLab(l){
+  l = l || {};
+  return { title:clean(l.title)?l.title:'', actions:Array.isArray(l.actions)?l.actions:[], did:l.did||'', techs:Array.isArray(l.techs)?l.techs:[], outcome:l.outcome||'', scope:l.scope||'', notes:l.notes||'' };
+}
+function normDay(d, date){
+  d = d || {};
+  return { date: d.date || date, course:d.course||'', labCount:(d.labCount===''||d.labCount==null)?'':Number(d.labCount)||0,
+    labs:Array.isArray(d.labs)?d.labs.map(normLab):[], updated:d.updated||null };
+}
+// Files from the full From Labs to Bullets app have no "app" marker. Restoring one keeps only the labs.
+const isFullAppFile = raw => !!raw && typeof raw === 'object' && raw.app !== APP_ID && !!raw.days && !!raw.settings;
+function normalize(raw){
+  const base = fresh();
+  if(!raw || typeof raw !== 'object') return base;
+  const fromFull = raw.app !== APP_ID;
+  const rs = raw.settings || {};
+  ['startDate','courses','lastCourse','lastBackup','savedAt','autoSaveSnooze','hideLiveTip'].forEach(k => { if(rs[k] !== undefined) base.settings[k] = rs[k]; });
+  if(fromFull){ delete base.settings.savedAt; delete base.settings.lastBackup; }
+  if(!Array.isArray(base.settings.courses) || !base.settings.courses.length) base.settings.courses = DEFAULT_COURSES.slice();
+  for(const [k,v] of Object.entries(raw.days||{})){
+    if(!isValidISO(k) || !v) continue;
+    if(fromFull && v.type === 'interview') continue;       // mock interview days have no labs
+    const d = normDay(v,k);
+    if(fromFull && !(d.labCount > 0)) continue;              // days without labs only held class notes
+    base.days[k] = d;
+  }
+  base.bullets = Array.isArray(raw.bullets) ? raw.bullets.filter(b=>b && b.text) : [];
+  return base;
+}
+let storageOK = true;
+function load(){
+  try { const raw = localStorage.getItem(KEY); if(raw) return normalize(JSON.parse(raw)); }
+  catch(e){ storageOK = false; }
+  return fresh();
+}
+let S = load();
+let saveTimer = null;
+function saveNow(){
+  clearTimeout(saveTimer); saveTimer = null;
+  S.settings.savedAt = Date.now();
+  try { localStorage.setItem(KEY, JSON.stringify(S)); storageOK = true; }
+  catch(e){ if(storageOK) toast('Could not save in this browser. Download a backup in Settings.'); storageOK = false; }
+  queueFileWrite();
+}
+function saveSoon(){ clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 350); }
+window.addEventListener('beforeunload', ()=>{ if(saveTimer) saveNow(); });
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden){ if(saveTimer) saveNow(); if(fileTimer){ clearTimeout(fileTimer); fileTimer = null; writeFile(); } } });
+// If the app is open in two tabs, keep them in step: when one tab saves, the other reloads the diary,
+// so an older tab can never overwrite newer entries.
+window.addEventListener('storage', e => {
+  if(e.key !== KEY || !e.newValue) return;
+  try { clearTimeout(saveTimer); saveTimer = null; S = normalize(JSON.parse(e.newValue)); st.entry = null; render(); } catch(err){}
+});
+
+/* ---------- Auto-save to a file (Edge and Chrome on a computer) ----------
+   The browser copy stays the working copy. When auto-save is on, every save is
+   mirrored to a file the student picked (ideally in OneDrive). On startup the two
+   are compared and the newer one wins, so clearing the browser loses nothing. */
+const FS_OK = typeof window.showSaveFilePicker === 'function' && window.isSecureContext;
+const AS = { handle:null, state:'off', lastWrite:null, writing:false, pending:false, problem:'' };
+// state: 'off' | 'on' | 'paused' (browser needs a click to allow editing) | 'problem' (file missing or unreadable)
+const FILE_TYPES = [{ description:'Lab diary', accept:{'application/json':['.json']} }];
+function idb(mode, fn){
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('fltb-lite-files', 1);
+    req.onupgradeneeded = () => req.result.createObjectStore('handles');
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => {
+      const db = req.result, tx = db.transaction('handles', mode), r = fn(tx.objectStore('handles'));
+      tx.oncomplete = () => { db.close(); resolve(r && r.result); };
+      tx.onerror = () => { db.close(); reject(tx.error); };
+    };
+  });
+}
+const idbGet = k => idb('readonly', s => s.get(k));
+const idbSet = (k,v) => idb('readwrite', s => s.put(v,k));
+const idbDel = k => idb('readwrite', s => s.delete(k));
+
+let fileTimer = null;
+function queueFileWrite(){ if(AS.state !== 'on') return; clearTimeout(fileTimer); fileTimer = setTimeout(()=>{ fileTimer = null; writeFile(); }, 500); }
+async function writeFile(){
+  if(AS.state !== 'on' || !AS.handle) return;
+  if(AS.writing){ AS.pending = true; return; }
+  AS.writing = true;
+  try {
+    const w = await AS.handle.createWritable();
+    await w.write(JSON.stringify(S, null, 2));
+    await w.close();
+    AS.lastWrite = Date.now();
+  } catch(e){
+    if(e && e.name === 'NotAllowedError'){ AS.state = 'paused'; toast('Auto-save is paused. Click "Resume auto-save" to keep saving to your file.'); }
+    else if(e && e.name === 'NotFoundError'){ AS.state = 'problem'; AS.problem = 'missing'; toast("Auto-save can't find your diary file."); }
+    else { AS.state = 'problem'; AS.problem = 'write'; toast("Auto-save couldn't write to your diary file."); }
+    refreshFileUI(true);
+  } finally {
+    AS.writing = false;
+    if(AS.pending){ AS.pending = false; writeFile(); }
+  }
+  refreshFileUI(false);
+}
+// Compares the file with the browser copy. Loads the file if it is newer (or the browser is empty), otherwise writes to it.
+async function syncWithFile(){
+  let data = null;
+  try {
+    const text = await (await AS.handle.getFile()).text();
+    if(text.trim()) data = JSON.parse(text);
+  } catch(e){
+    AS.state = 'problem'; AS.problem = (e && e.name === 'NotFoundError') ? 'missing' : 'invalid';
+    return false;
+  }
+  if(data && (!(data.settings && data.days) || isFullAppFile(data))){ AS.state = 'problem'; AS.problem = isFullAppFile(data) ? 'full' : 'invalid'; return false; }
+  AS.state = 'on'; AS.problem = '';
+  const fileAt = (data && data.settings.savedAt) || 0, localAt = S.settings.savedAt || 0;
+  const fileHasDays = data && Object.keys(data.days).length > 0;
+  if(data && (fileAt > localAt || (!loggedDays().length && fileHasDays))){
+    S = normalize(data);
+    try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){}
+    AS.lastWrite = fileAt || null;
+    toast(`Diary loaded from ${AS.handle.name}`);
+  } else {
+    await writeFile();
+  }
+  return true;
+}
+async function turnOnAutoSave(){
+  let h;
+  try { h = await window.showSaveFilePicker({ suggestedName:'My lab diary (Lite).json', types:FILE_TYPES, startIn:'documents', id:'fltb-lite-diary' }); }
+  catch(e){ if(e && e.name !== 'AbortError') toast("Couldn't turn on auto-save. Please try again."); return false; }
+  AS.handle = h;
+  try { await idbSet('diary', h); } catch(e){}
+  saveNow();
+  const ok = await syncWithFile();
+  if(ok) toast(`Auto-save is on. Saving to ${h.name}`);
+  return ok;
+}
+async function openDiaryFile(){
+  let h;
+  try { [h] = await window.showOpenFilePicker({ types:FILE_TYPES, multiple:false, id:'fltb-lite-diary' }); }
+  catch(e){ if(e && e.name !== 'AbortError') toast("Couldn't open that file."); return false; }
+  let data;
+  try { data = JSON.parse(await (await h.getFile()).text()); } catch(e){ toast("That file isn't a From Labs to Bullets: Lite diary."); return false; }
+  if(!data || !data.settings || !data.days){ toast("That file isn't a From Labs to Bullets: Lite diary."); return false; }
+  // Never auto-save over a full-app diary: Lite would drop its class notes. Restoring a copy is safe.
+  if(isFullAppFile(data)){ alert(`${h.name} is a diary from the full From Labs to Bullets app, so Lite won't save over it.\n\nTo bring its labs into Lite, use "Restore from a backup file" instead. Your original file won't be changed.`); return false; }
+  if(loggedDays().length && !confirm(`Replace the diary in this browser with ${h.name} (${Object.keys(data.days).length} days)?`)) return false;
+  S = normalize(data);
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){}
+  AS.handle = h;
+  try { await idbSet('diary', h); } catch(e){}
+  let perm = 'prompt';
+  try { perm = await h.requestPermission({ mode:'readwrite' }); } catch(e){}
+  AS.state = perm === 'granted' ? 'on' : 'paused';
+  AS.lastWrite = data.settings.savedAt || null;
+  toast(`Diary loaded from ${h.name}`);
+  return true;
+}
+async function resumeAutoSave(){
+  if(!AS.handle) return;
+  let perm = 'denied';
+  try { perm = await AS.handle.requestPermission({ mode:'readwrite' }); } catch(e){}
+  if(perm !== 'granted'){ toast('Edge needs your permission to keep saving to the file.'); return; }
+  await syncWithFile();
+  render();
+}
+async function turnOffAutoSave(quiet){
+  clearTimeout(fileTimer); fileTimer = null;
+  const name = AS.handle && AS.handle.name;
+  Object.assign(AS, { handle:null, state:'off', lastWrite:null, problem:'' });
+  try { await idbDel('diary'); } catch(e){}
+  if(!quiet) toast(`Auto-save is off. ${name ? name + ' was not deleted.' : ''}`);
+}
+async function initAutoSave(){
+  try { if(navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch(e){}
+  if(!FS_OK) return;
+  let h = null;
+  try { h = await idbGet('diary'); } catch(e){ return; }
+  if(!h) return;
+  AS.handle = h;
+  let perm = 'prompt';
+  try { perm = await h.queryPermission({ mode:'readwrite' }); } catch(e){}
+  if(perm === 'granted') await syncWithFile(); else AS.state = 'paused';
+  render();
+}
+function fmtTime(ms){ return new Date(ms).toLocaleString(undefined, { weekday:'short', hour:'numeric', minute:'2-digit' }); }
+function fileStatusHTML(){
+  const name = AS.handle ? `<b>${esc(AS.handle.name)}</b>` : 'your diary file';
+  if(AS.state === 'on') return `<span class="pill ok">On</span> Saving to ${name}${AS.lastWrite ? ` · last saved ${esc(fmtTime(AS.lastWrite))}` : ''}`;
+  if(AS.state === 'paused') return `<span class="pill draft">Paused</span> Edge needs one click to keep saving to ${name}.`;
+  if(AS.state === 'problem') return `<span class="pill draft">Needs attention</span> ${AS.problem === 'missing' ? `Can't find ${name}. It may have been moved, renamed, or deleted.` : AS.problem === 'invalid' ? `${name} doesn't look like a diary file.` : AS.problem === 'full' ? `${name} belongs to the full From Labs to Bullets app, so Lite won't save over it. Save to a new file instead.` : `Couldn't save to ${name}.`}`;
+  return '<span class="pill">Off</span> Your diary is saved only in this browser.';
+}
+// Small updates without a full re-render (so typing is never interrupted).
+function refreshFileUI(stateChanged){
+  const el = $('#fileStatus'); if(el) el.innerHTML = fileStatusHTML();
+  const f = $('#footNote');
+  if(f && FS_OK) f.innerHTML =
+    AS.state === 'on' ? `Auto-save is on: your diary is also saved to <b>${esc(AS.handle.name)}</b>.` :
+    AS.state === 'paused' ? `Auto-save is paused. Click <b>Resume auto-save</b> to keep saving to <b>${esc(AS.handle.name)}</b>.` :
+    AS.state === 'problem' ? 'Auto-save needs attention. Open <b>Settings &amp; backup</b> to fix it.' :
+    'Your entries are stored in this browser. Turn on auto-save in <b>Settings &amp; backup</b> so you never lose them.';
+  if(stateChanged && (st.view === 'settings' || st.view === 'today') && !main.contains(document.activeElement)) render();
+}
+// Banner shown at the top of Today when auto-save needs attention, or as a weekly reminder.
+function fileBannerHTML(){
+  if(!FS_OK) return backupNudge();
+  if(AS.state === 'paused') return `<div class="notice info small actions-row" style="justify-content:space-between"><span><b>Auto-save is paused.</b> Click the button, then <b>Allow</b>, to keep saving your diary to ${esc(AS.handle.name)}. If Edge offers <b>Allow on every visit</b>, choose it so Edge stops asking.</span><button class="btn primary small" data-fs="resume">Resume auto-save</button></div>`;
+  if(AS.state === 'problem') return `<div class="notice small actions-row" style="justify-content:space-between"><span><b>Auto-save needs attention.</b> ${AS.problem === 'missing' ? "We can't find your diary file. It may have been moved or renamed." : AS.problem === 'full' ? "That file belongs to the full From Labs to Bullets app, so Lite won't save over it." : "We couldn't use your diary file."}</span><span class="actions-row"><button class="btn small" data-fs="open">Find my file</button><button class="btn small" data-fs="on">Save to a new file</button></span></div>`;
+  if(AS.state === 'on') return '';
+  if(st.skippedAutoSave) return `<div class="notice info small actions-row" style="justify-content:space-between"><span>No problem. You can turn on auto-save any time in <b>Settings &amp; backup</b>. Until then, download a backup every Friday so you don't lose your work.</span><button class="btn ghost small" data-fs="hideskip" aria-label="Dismiss">Got it</button></div>`;
+  const w = weekOf(todayISO()), snoozed = S.settings.autoSaveSnooze && (Date.now() - S.settings.autoSaveSnooze) < 7*864e5;
+  if(w >= 2 && loggedDays().length && !snoozed) return `<div class="notice info small actions-row" style="justify-content:space-between"><span><b>Turn on auto-save so you never lose your entries.</b> It saves your diary to a file on your computer every time you type.</span><span class="actions-row"><button class="btn primary small" data-fs="on">Turn on auto-save</button><button class="btn ghost small" data-fs="snooze">Not now</button></span></div>`;
+  return backupNudge();
+}
+// Shared click handling for auto-save buttons (data-fs="…") anywhere in the page.
+document.addEventListener('click', async e => {
+  const b = e.target.closest('[data-fs]'); if(!b) return;
+  const a = b.dataset.fs;
+  if(a === 'on'){ if(await turnOnAutoSave()) render(); }
+  if(a === 'open'){ if(await openDiaryFile()){ st.cur = todayISO(); setView(S.settings.startDate ? 'today' : st.view); } }
+  if(a === 'resume') await resumeAutoSave();
+  if(a === 'off'){ await turnOffAutoSave(); render(); }
+  if(a === 'snooze'){ S.settings.autoSaveSnooze = Date.now(); saveNow(); render(); }
+  if(a === 'hideskip'){ st.skippedAutoSave = false; render(); }
+  if(a === 'hidelivetip'){ S.settings.hideLiveTip = true; saveNow(); render(); }
+});
+
+const labsOf = d => d.labs.slice(0, Number(d.labCount)||0).map(normLab);
+const hasContent = d => !!d && ((d.labCount !== '' && d.labCount != null) || labsOf(d).some(l=>clean(l.title)||clean(l.did)||clean(l.notes)));
+const dayLabelText = d => (Number(d.labCount)||0) === 0 ? `${d.course ? d.course + ' · ' : ''}No labs` : (d.course || '');
+const loggedDays = () => Object.values(S.days).filter(hasContent).sort((a,b)=>a.date.localeCompare(b.date));
+function missingFields(d){
+  const m = [];
+  if(d.labCount==='' || d.labCount==null) m.push({label:'1. Number of labs completed', sel:'[data-f="labCount"]'});
+  labsOf(d).forEach((l,i)=>{
+    const n = `Lab ${i+1}`;
+    if(!clean(l.title)) m.push({label:`${n}: lab title`, sel:`[data-lab="${i}"][data-f="title"]`});
+    if(!clean(l.did)) m.push({label:`${n}: 2. what you did`, sel:`[data-lab="${i}"][data-f="did"]`});
+    if(!l.techs.length) m.push({label:`${n}: 2. technologies or tools`, sel:`[data-tagbox="${i}"]`});
+    if(!clean(l.outcome)) m.push({label:`${n}: 3. result and objective`, sel:`[data-lab="${i}"][data-f="outcome"]`});
+    if(!clean(l.scope)) m.push({label:`${n}: 4. scope of the environment`, sel:`[data-lab="${i}"][data-f="scope"]`});
+  });
+  return m;
+}
+const isComplete = d => missingFields(d).length === 0;
+function allTechs(){
+  const map = new Map();
+  SEED_TECH.forEach(t=>map.set(t.toLowerCase(), t));
+  Object.values(S.days).forEach(d=>labsOf(d).forEach(l=>l.techs.forEach(t=>map.set(t.toLowerCase(), t))));
+  return [...map.values()].sort((a,b)=>a.localeCompare(b));
+}
+function refreshTechList(){ $('#techlist').innerHTML = allTechs().map(t=>`<option value="${esc(t)}"></option>`).join(''); }
+
+/* ---------- App state ---------- */
+const st = { view:'today', cur:todayISO(), entry:null, sumRange:'all', sumWeek:'', sumCourse:'', sumFrom:'', sumTo:'', sumType:'bullets', prompts:{}, pid:0 };
+const main = $('#main');
+
+function setView(v){
+  st.view = v;
+  $$('#tabs button').forEach(b => { if(b.dataset.view===v) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  render();
+  window.scrollTo({top:0});
+}
+$('#tabs').addEventListener('click', e => { const b = e.target.closest('button[data-view]'); if(b) { if(!S.settings.startDate && b.dataset.view!=='settings'){ render(); return;} if(b.dataset.view === 'today') st.cur = todayISO(); setView(b.dataset.view); } });
+
+function updateBadge(){
+  const w = weekOf(todayISO());
+  $('#weekBadge').textContent = (w && w>=1 && w<=TOTAL_WEEKS) ? `Week ${w} of ${TOTAL_WEEKS}${w===PRO_DEV_WEEK?' · Pro-Dev Week':''}` : (w>TOTAL_WEEKS ? 'Training complete' : '');
+}
+
+function resetHandlers(){ main.onclick = main.oninput = main.onchange = main.onkeydown = null; main.removeEventListener('focusout', onTagBlur, true); }
+function render(){
+  resetHandlers(); st.prompts = {}; updateBadge(); refreshTechList(); refreshFileUI(false);
+  if(!S.settings.startDate && st.view!=='settings') return renderWelcome();
+  ({today:renderToday, timeline:renderTimeline, summaries:renderSummaries, settings:renderSettings})[st.view]();
+  refreshFileUI(false);
+}
+
+/* Global copy handler */
+document.addEventListener('click', e => {
+  const c = e.target.closest('[data-copy]'); if(c){ const txt = st.prompts[c.dataset.copy]; if(txt) copyText(txt); }
+  const p = e.target.closest('[data-preview]');
+  if(p){ const pre = document.getElementById(p.dataset.preview); if(pre){ pre.hidden = !pre.hidden; p.textContent = pre.hidden ? 'Preview' : 'Hide'; } }
+});
+
+/* ---------- Welcome ---------- */
+function renderWelcome(){
+  const mon = mondayOf(todayISO());
+  main.innerHTML = `
+  <section class="card welcome">
+    <h2>Welcome! Let's set up your lab diary.</h2>
+    <p class="lede">Each class day (Monday to Thursday), log the labs you complete: what you did, the result, the scope, and any notes. In return you get:</p>
+    <ul>
+      <li>Prompts for <b>resume bullets</b>, a <b>training summary</b>, and <b>interview stories</b> to paste into your AI tool (Copilot, ChatGPT, Claude, Gemini…), built from your own labs.</li>
+      <li>A printable <b>training record (PDF)</b> and a <b>GitHub portfolio</b> (README.md) of your hands-on work.</li>
+    </ul>
+    <label class="field"><span class="q">When did (or will) your 17-week training start?</span>
+      <span class="hint">Pick the first day of class. The app uses it to number your weeks.</span>
+      <input type="date" id="startDate" value="${mon}" style="max-width:220px"></label>
+    <div class="notice info small" style="margin-bottom:16px"><b>Private by design:</b> everything you type stays on your own computer. No account, nothing sent anywhere.</div>
+    <div class="actions-row">
+      <button class="btn primary" id="startBtn">${FS_OK ? 'Next' : 'Get started'}</button>
+      ${FS_OK ? '<button class="btn ghost" data-fs="open">I already have a diary file</button>' : ''}
+      <label class="btn ghost" style="cursor:pointer">Restore from a backup file<input type="file" id="importW" accept="application/json,.json" hidden></label>
+    </div>
+  </section>`;
+  $('#startBtn').onclick = () => {
+    const v = $('#startDate').value;
+    if(!isValidISO(v)){ $('#startDate').classList.add('invalid'); return; }
+    const finish = () => { S.settings.startDate = v; saveNow(); st.cur = todayISO(); setView('today'); };
+    if(!FS_OK){ finish(); toast('All set. Log your first day!'); return; }
+    renderAutoSaveStep(finish);
+  };
+  $('#importW').onchange = e => importFile(e.target.files[0]);
+}
+// Final setup step: explains why auto-save matters and turns it on.
+function renderAutoSaveStep(finish){
+  main.innerHTML = `
+  <section class="card welcome">
+    <p class="small muted" style="margin:0 0 4px">Last step</p>
+    <h2>Keep your diary safe</h2>
+    <p class="lede">Your entries are saved inside Edge. If Edge's data is ever cleared, by a cleanup tool, a reset, or a new computer, your entries are gone.</p>
+    <p><b>Auto-save</b> fixes that. The app also saves your diary to a file on your computer every time you type. Save it in your <b>OneDrive</b> folder and it's backed up online too.</p>
+    <ul>
+      <li>Takes about 30 seconds, once</li>
+      <li>Only you can see the file</li>
+      <li>Nothing else changes about how you use the app</li>
+    </ul>
+    <div class="notice info small" style="margin-bottom:16px"><b>What happens next:</b> Edge opens a Save window. Choose your <b>OneDrive</b> folder (or <b>Documents</b>) and click <b>Save</b>. For your first few visits, the app may show <b>Auto-save is paused</b>. Click <b>Resume auto-save</b>, then <b>Allow</b>. When Edge offers <b>Allow on every visit</b>, choose it and Edge stops asking.</div>
+    <div class="actions-row">
+      <button class="btn primary" id="asOn">Turn on auto-save (recommended)</button>
+      <button class="btn ghost" id="asSkip">Skip for now</button>
+    </div>
+  </section>`;
+  $('#asOn').onclick = async () => {
+    finish();                       // save the setup first, so the file starts with it
+    if(await turnOnAutoSave()) render();
+    else { st.skippedAutoSave = true; render(); }
+  };
+  $('#asSkip').onclick = () => { st.skippedAutoSave = true; finish(); };
+}
+
+/* ---------- Today ---------- */
+function stepClassDay(dir){
+  let d = st.cur;
+  do { d = addDays(d, dir); } while(dow(d)===0 || dow(d)===6 || isProDev(d));
+  st.cur = d; renderToday();
+}
+function dayLabel(d){
+  const w = weekOf(d);
+  let sub;
+  if(w===null) sub = '';
+  else if(w < 1) sub = 'Before your training start date';
+  else if(w > TOTAL_WEEKS) sub = `After week ${TOTAL_WEEKS}`;
+  else sub = `Week ${w} of ${TOTAL_WEEKS}${w===PRO_DEV_WEEK?' · Pro-Dev Week':''}`;
+  return `${esc(fmtLong(d))}<span>${sub}${d===todayISO()?' · Today':''}</span>`;
+}
+function backupNudge(){
+  if(!loggedDays().length) return '';
+  const last = S.settings.lastBackup;
+  const days = last ? Math.floor((Date.now()-last)/864e5) : null;
+  if(days !== null && days < 7) return '';
+  return `<div class="notice small actions-row" style="justify-content:space-between">
+    <span>${days===null ? "You haven't backed up your diary yet." : `Your last backup was ${days} days ago.`} If this browser's data is cleared, your entries are gone.</span>
+    <button class="btn small" data-export>Download backup</button></div>`;
+}
+function renderToday(){
+  resetHandlers();
+  const d = st.cur, day = dow(d);
+  let body;
+  const proDev = isProDev(d);
+  if(proDev) body = proDevHTML(d);
+  else if(day===0 || day===6) body = weekendHTML(d);
+  else if(day===5) body = fridayHTML(d);
+  else body = dailyHTML(d);
+  main.innerHTML = `<div class="stack">
+    ${fileBannerHTML()}
+    <section class="card daybar">
+      <button class="icon-btn" data-nav="-1" aria-label="Previous day">‹</button>
+      <div class="daybar-mid"><input type="date" id="datePick" value="${d}" aria-label="Choose a date"><div class="daylabel">${dayLabel(d)}</div></div>
+      <button class="icon-btn" data-nav="1" aria-label="Next day">›</button>
+    </section>
+    ${body}
+  </div>`;
+  $('#datePick').onchange = e => { st.cur = isValidISO(e.target.value) ? e.target.value : todayISO(); renderToday(); };
+  main.onclick = e => {
+    const t = e.target;
+    const nav = t.closest('[data-nav]'); if(nav) return stepClassDay(Number(nav.dataset.nav));
+    const go = t.closest('[data-goto]'); if(go){ st.cur = go.dataset.goto; return renderToday(); }
+    if(t.closest('[data-export]')) return exportData();
+    const open = t.closest('[data-open]');
+    if(open){ if(open.dataset.sumweek){ st.sumRange = 'week'; st.sumWeek = open.dataset.sumweek; } return setView(open.dataset.open); }
+    if(proDev) return;
+    if(day>=1 && day<=4) dailyClick(e);
+  };
+  if(proDev) return;
+  if(day>=1 && day<=4) bindDaily();
+}
+
+/* Friday: no class, so show the week at a glance to catch up, plus a backup reminder. */
+function weekDays(w){ return [0,1,2,3].map(k=>addDays(weekStart(w),k)); }
+function fridayHTML(date){
+  const w = weekOf(date);
+  if(w===null || w<1) return `<section class="card empty"><h2>No class on Fridays</h2><p class="muted">This date is before your training start date.</p></section>`;
+  let weekLabs = 0;
+  const rows = weekDays(w).map(d => {
+    const e = S.days[d];
+    if(e) weekLabs += labsOf(e).length;
+    const status = !hasContent(e) ? (d > todayISO() ? `<span class="pill">Upcoming</span>` : `<span class="pill">Not logged</span>`) : isComplete(e) ? `<span class="pill ok">Complete</span>` : `<span class="pill draft">Draft</span>`;
+    return `<button type="button" class="dayrow" data-goto="${d}"><b>${esc(fmtShort(d))}</b><span class="c">${esc(e&&hasContent(e)?dayLabelText(e):'')}</span><span class="labs small muted">${labsText(e?labsOf(e).length:0)}</span>${status}</button>`;
+  }).join('');
+  return `<section class="card" style="padding:0;overflow:hidden">
+      <div style="padding:18px 18px 10px"><h2>Week ${w} at a glance</h2><p class="lede small">No class today. Tap a day to log a lab you missed or finish a draft.</p></div>
+      <div class="dayrows">${rows}</div>
+    </section>
+    ${weekLabs ? `<section class="card actions-row" style="justify-content:space-between">
+      <div><h3>Turn this week into bullets</h3><p class="lede small">You logged ${labsText(weekLabs)} this week. Build resume bullets, a summary, or interview stories while the details are fresh.</p></div>
+      <button class="btn primary" data-open="summaries" data-sumweek="${w}">Open Summaries &amp; bullets</button>
+    </section>` : ''}
+    <section class="card actions-row" style="justify-content:space-between">
+      <div><h3>Friday backup</h3><p class="lede small">${AS.state === 'on' ? 'Auto-save keeps your diary file up to date, so this is optional. You can still download an extra copy.' : 'Download a copy of your diary so you never lose your work.'}</p></div>
+      <button class="btn" data-export>Download backup</button>
+    </section>`;
+}
+
+function proDevHTML(d){
+  const w8Thu = addDays(weekStart(PRO_DEV_WEEK - 1), 3);
+  const w10Mon = weekStart(PRO_DEV_WEEK + 1);
+  return `<section class="card empty prodev">
+    <h2>Week ${PRO_DEV_WEEK} is Pro-Dev Week</h2>
+    <p class="muted">There's nothing to log this week. Enjoy your professional development classes and activities.</p>
+    <p class="muted">This is a great time to turn your first ${PRO_DEV_WEEK - 1} weeks into resume bullets and interview stories.</p>
+    <div class="actions-row" style="justify-content:center;margin-top:6px">
+      <button class="btn primary" data-open="summaries">Open Summaries &amp; bullets</button>
+      ${d < w10Mon ? `<button class="btn" data-goto="${w8Thu}">Back to week ${PRO_DEV_WEEK - 1}</button>` : ''}
+    </div></section>`;
+}
+
+function weekendHTML(d){
+  const fri = addDays(d, dow(d)===6 ? -1 : -2);
+  const thu = addDays(fri, -1);
+  return `<section class="card empty">
+    <h2>No class today. Enjoy the weekend!</h2>
+    <p class="muted">Want to catch up? Jump to a day below.</p>
+    <div class="actions-row" style="justify-content:center">
+      <button class="btn primary" data-goto="${fri}">This week at a glance</button>
+      <button class="btn" data-goto="${thu}">Thursday's log</button>
+    </div></section>`;
+}
+
+/* Daily form */
+function getDay(date){
+  return S.days[date] ? S.days[date] : normDay({course:S.settings.lastCourse}, date);
+}
+function courseOptions(sel){
+  const list = S.settings.courses.slice();
+  if(sel && !list.includes(sel)) list.unshift(sel);
+  return `<option value="">Choose the course or module…</option>` + list.map(c=>`<option ${c===sel?'selected':''}>${esc(c)}</option>`).join('')
+    + `<option value="__add__">+ Add a new course…</option>`;
+}
+function tagsHTML(techs, i){
+  return techs.map((t,j)=>`<span class="tag">${esc(t)}<button type="button" data-rmtag="${i}:${j}" aria-label="Remove ${esc(t)}">×</button></span>`).join('')
+    + `<input class="taginput" data-taginput="${i}" list="techlist" aria-label="Add a technology for lab ${i+1}" placeholder="${techs.length?'Add another…':'Type a technology or tool, press Enter'}">`;
+}
+const SCOPE_EXAMPLES = `<details class="examples"><summary>See examples</summary><ul>
+  <li><b>Windows Server:</b> 2 servers, 1 domain, 3 OUs, 10 user accounts, 2 Group Policy objects</li>
+  <li><b>Networking:</b> 1 DHCP scope (50 addresses), 1 reservation, 2 DNS zones, 4 DNS records</li>
+  <li><b>Linux (Ubuntu):</b> 1 Ubuntu server, 3 users, 2 groups, 1 shared folder with custom permissions</li>
+  <li><b>PowerShell:</b> 1 script, 25 user accounts created from a CSV file, 3 servers checked</li>
+  <li><b>GitHub:</b> 1 repository, 2 branches, 1 pull request, 1 GitHub Actions workflow</li>
+  <li><b>Endpoint management:</b> 5 devices enrolled, 2 compliance policies, 1 app deployed</li>
+  <li><b>Identity:</b> 10 users, 2 groups, 1 Conditional Access policy, MFA turned on for 1 group</li>
+  <li><b>Azure (later in the program):</b> 2 VMs, 1 virtual network, 2 subnets, 1 network security group with 3 rules</li>
+  <li><b>Nothing to count?</b> Describe the environment, for example: "Explored only: 1 Windows Server VM, reviewed Event Viewer logs"</li>
+</ul></details>`;
+function labHTML(l, i){
+  return `<section class="card lab" data-labcard="${i}">
+    <div class="card-head"><h3 class="lab-num">Lab ${i+1}</h3></div>
+    <label class="field"><span class="q">Lab title <i class="req">*</i></span>
+      <input data-lab="${i}" data-f="title" value="${esc(l.title)}" placeholder="Paste the lab title from your lab platform"></label>
+    <div class="field"><span class="q"><b>2.</b> What did you build, configure, deploy, or automate in the virtual lab, and what specific technologies or tools did you use to accomplish it? <i class="req">*</i></span>
+      <span class="hint">Tap the action words that fit, describe what you did, then add each technology or tool.</span>
+      <div class="chips" role="group" aria-label="Actions for lab ${i+1}">${ACTIONS.map(a=>`<button type="button" class="chip ${l.actions.includes(a)?'on':''}" data-chip="${a}" data-lab="${i}" aria-pressed="${l.actions.includes(a)}">${a}</button>`).join('')}</div>
+      <textarea data-lab="${i}" data-f="did" rows="3" aria-label="What you did in lab ${i+1}" placeholder="e.g., Installed the AD DS role on a Windows Server VM, promoted it to a domain controller, and created OUs and user accounts">${esc(l.did)}</textarea>
+      <div class="tagbox" data-tagbox="${i}">${tagsHTML(l.techs, i)}</div>
+    </div>
+    <label class="field"><span class="q"><b>3.</b> How did the environment or solution function after you completed the lab, and what business or technical objective did your setup achieve? What problem were you trying to solve? <i class="req">*</i></span>
+      <textarea data-lab="${i}" data-f="outcome" rows="3" placeholder="e.g., A client computer could join the domain and sign in with a domain account. This gave the company one central place to manage user accounts and access.">${esc(l.outcome)}</textarea></label>
+    <div class="field"><span class="q"><b>4.</b> What was the scope of the lab environment, including the number of systems, devices, accounts, or automation scripts you configured? <i class="req">*</i></span>
+      <span class="hint"><b>Why this matters:</b> numbers make your resume bullets stand out. "Created 25 user accounts with PowerShell" is stronger than "Created user accounts." Count only what you actually built or changed: servers or VMs, user accounts, groups, policies, scripts, rules, devices, or files.</span>
+      <textarea data-lab="${i}" data-f="scope" rows="2" aria-label="Scope of lab ${i+1}" placeholder="e.g., 2 servers, 1 domain, 3 OUs, 10 user accounts, 2 Group Policy objects">${esc(l.scope)}</textarea>
+      ${SCOPE_EXAMPLES}
+    </div>
+    <label class="field lab-notes"><span class="q">Lab notes <span class="opt">(optional)</span></span>
+      <span class="hint">Anything else worth remembering: key steps, commands, settings, a problem you hit and how you fixed it. <b>Troubleshooting makes great interview stories.</b> Your lab notes go into your prompts and your PDF training record, but not your GitHub portfolio.</span>
+      <textarea data-lab="${i}" data-f="notes" rows="4" aria-label="Notes for lab ${i+1}" placeholder="e.g., The client couldn't join the domain at first. Its DNS pointed to the router instead of the domain controller. Fixed it with Set-DnsClientServerAddress, then the join worked.">${esc(l.notes)}</textarea></label>
+  </section>`;
+}
+function labsHTML(e){
+  const n = Number(e.labCount)||0;
+  while(e.labs.length < n) e.labs.push(normLab());
+  if(!n) return '';
+  return e.labs.slice(0,n).map(labHTML).join('');
+}
+function statusPill(e){
+  if(!hasContent(e)) return `<span class="pill">Not started</span>`;
+  const m = missingFields(e).length;
+  return m ? `<span class="pill draft">Draft · ${m} left</span>` : `<span class="pill ok">Complete</span>`;
+}
+function dayActionsHTML(date){
+  return `<div class="actions-row">
+      <button type="button" class="btn primary" id="finishDay">Save day</button>
+      <span class="muted small">Your answers save automatically as you type.</span>
+      <button type="button" class="btn ghost small" id="clearDay" style="margin-left:auto" ${S.days[date] ? '' : 'hidden'}>Clear this day</button>
+    </div>
+    <div id="missing"></div>`;
+}
+function dailyHTML(date){
+  const e = getDay(date); st.entry = e;
+  return `<form id="dayForm" class="stack" novalidate onsubmit="return false">
+    <section class="card">
+      <div class="card-head"><h2>Lab log</h2><span id="statusPill">${statusPill(e)}</span></div>
+      ${date === todayISO() && !S.settings.hideLiveTip ? `<div class="notice info small actions-row" style="justify-content:space-between;margin-bottom:16px"><span><b>Log each lab right after you finish it,</b> while the title and details are fresh. Raise the number of labs and a new section appears. <b>Your answers save automatically as you type.</b></span><button type="button" class="btn ghost small" data-fs="hidelivetip">Got it</button></div>` : `<p class="muted small" style="margin:-4px 0 14px">Your answers save automatically as you type.</p>`}
+      <div class="field">
+        <label><span class="q">Course or module</span>
+          <select data-f="course">${courseOptions(e.course)}</select></label>
+        <div id="addCourse" class="actions-row" style="margin-top:8px" hidden>
+          <input id="newCourse" aria-label="New course name" placeholder="Course name, e.g., AZ-500: Azure Security Technologies" style="flex:1;min-width:200px">
+          <button type="button" class="btn primary small" id="saveCourse">Add course</button>
+          <button type="button" class="btn ghost small" id="cancelCourse">Cancel</button>
+        </div>
+      </div>
+      <label class="field"><span class="q"><b>1.</b> How many labs have you completed so far today? <i class="req">*</i></span>
+        <span class="hint">Raise the number each time you finish a lab, and a new section appears for it. Finished a lab you started yesterday? Log it today, the day you finish it. Enter 0 on days without labs.</span>
+        <input type="number" class="short" min="0" max="12" inputmode="numeric" data-f="labCount" value="${e.labCount}"></label>
+      <p class="muted small" id="noLabsNote" style="margin:0" ${e.labCount === 0 ? '' : 'hidden'}>No labs today, so there's nothing else to log. Click <b>Save day</b> to mark it done.</p>
+    </section>
+    <div id="labs" class="stack">${labsHTML(e)}</div>
+    ${dayActionsHTML(date)}
+  </form>
+  <div id="afterSave"></div>`;
+}
+function persistEntry(){
+  const e = st.entry; e.updated = Date.now(); S.days[e.date] = e;
+  const pill = $('#statusPill'); if(pill) pill.innerHTML = statusPill(e);
+  const clr = $('#clearDay'); if(clr) clr.hidden = false;
+  saveSoon();
+}
+function renderTagbox(i, focus){
+  const box = main.querySelector(`[data-tagbox="${i}"]`); if(!box) return;
+  box.innerHTML = tagsHTML(st.entry.labs[i].techs, i);
+  box.classList.remove('invalid');
+  if(focus) box.querySelector('input').focus();
+}
+function addTags(i, raw, focus){
+  const l = st.entry.labs[i];
+  const parts = String(raw).split(',').map(s=>s.trim()).filter(Boolean);
+  if(!parts.length) return;
+  parts.forEach(p => { if(!l.techs.some(t=>t.toLowerCase()===p.toLowerCase())) l.techs.push(p); });
+  renderTagbox(i, focus); persistEntry();
+}
+function onTagBlur(e){
+  const t = e.target;
+  if(t.dataset && t.dataset.taginput != null && clean(t.value)){
+    const i = Number(t.dataset.taginput), v = t.value;
+    setTimeout(()=>addTags(i, v, false), 0);
+  }
+}
+function bindDaily(){
+  const e = st.entry;
+  main.oninput = ev => {
+    const t = ev.target, f = t.dataset.f;
+    if(t.dataset.taginput != null){
+      // datalist pick: add when the value exactly matches a suggestion
+      if(ev.inputType === 'insertReplacementText' || ev.inputType === undefined){
+        if(allTechs().some(x=>x===t.value)) addTags(Number(t.dataset.taginput), t.value, true);
+      }
+      return;
+    }
+    if(!f) return;
+    if(f === 'course' && t.value === '__add__'){
+      $('#addCourse').hidden = false; $('#newCourse').value = ''; $('#newCourse').focus();
+      return;
+    }
+    if(f === 'course') $('#addCourse').hidden = true;
+    t.classList.remove('invalid');
+    if(t.dataset.lab != null){ e.labs[Number(t.dataset.lab)][f] = t.value; }
+    else if(f === 'labCount'){
+      e.labCount = t.value==='' ? '' : Math.max(0, Math.min(12, parseInt(t.value,10)||0));
+      $('#labs').innerHTML = labsHTML(e);
+      $('#noLabsNote').hidden = e.labCount !== 0;
+    } else {
+      e[f] = t.value;
+      if(f === 'course'){ S.settings.lastCourse = t.value; }
+    }
+    persistEntry();
+  };
+  main.onkeydown = ev => {
+    const t = ev.target;
+    if(t.id === 'newCourse'){
+      if(ev.key === 'Enter'){ ev.preventDefault(); saveNewCourse(); }
+      else if(ev.key === 'Escape'){ ev.preventDefault(); cancelNewCourse(); }
+      return;
+    }
+    if(t.dataset.taginput == null) return;
+    const i = Number(t.dataset.taginput);
+    if(ev.key === 'Enter' || ev.key === ','){ ev.preventDefault(); if(clean(t.value)) addTags(i, t.value, true); }
+    else if(ev.key === 'Backspace' && !t.value && e.labs[i].techs.length){ e.labs[i].techs.pop(); renderTagbox(i, true); persistEntry(); }
+  };
+  main.addEventListener('focusout', onTagBlur, true);
+}
+function saveNewCourse(){
+  const inp = $('#newCourse'), name = clean(inp.value).replace(/\s+/g,' ');
+  if(!name){ inp.classList.add('invalid'); inp.focus(); return; }
+  const existing = S.settings.courses.find(c => c.toLowerCase() === name.toLowerCase());
+  const course = existing || name;
+  if(!existing) S.settings.courses.push(name);
+  const e = st.entry;
+  e.course = course; S.settings.lastCourse = course;
+  $('[data-f="course"]').innerHTML = courseOptions(course);
+  $('#addCourse').hidden = true;
+  persistEntry(); saveNow();
+  toast(existing ? `"${course}" was already on your list, so it's selected` : `"${course}" added to your course list`);
+}
+function cancelNewCourse(){
+  $('[data-f="course"]').innerHTML = courseOptions(st.entry.course);
+  $('#addCourse').hidden = true;
+}
+function goToField(m){
+  const el = main.querySelector(m.sel); if(!el) return;
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+  const f = el.matches('input,textarea,select') ? el : el.querySelector('input');
+  if(f) setTimeout(()=>f.focus({preventScroll:true}), 300);
+}
+function dailyClick(ev){
+  const t = ev.target, e = st.entry;
+  const mg = t.closest('[data-missgo]');
+  if(mg){ const m = (st.miss||[])[Number(mg.dataset.missgo)]; if(m) goToField(m); return; }
+  if(t.id === 'saveCourse') return saveNewCourse();
+  if(t.id === 'cancelCourse') return cancelNewCourse();
+  const chip = t.closest('[data-chip]');
+  if(chip){
+    const l = e.labs[Number(chip.dataset.lab)], a = chip.dataset.chip;
+    const k = l.actions.indexOf(a); if(k>=0) l.actions.splice(k,1); else l.actions.push(a);
+    chip.classList.toggle('on', k<0); chip.setAttribute('aria-pressed', String(k<0));
+    return persistEntry();
+  }
+  const rm = t.closest('[data-rmtag]');
+  if(rm){ const [i,j] = rm.dataset.rmtag.split(':').map(Number); e.labs[i].techs.splice(j,1); renderTagbox(i, true); return persistEntry(); }
+  if(t.closest('.tagbox') && t.classList.contains('tagbox')) return t.querySelector('input').focus();
+  if(t.id === 'clearDay'){
+    if(confirm(`Clear everything you entered for ${fmtLong(e.date)}? This can't be undone.`)){ delete S.days[e.date]; saveNow(); renderToday(); toast('Day cleared'); }
+    return;
+  }
+  if(t.id === 'finishDay'){
+    // flush any half-typed technology
+    $$('[data-taginput]', main).forEach(inp => { if(clean(inp.value)) addTags(Number(inp.dataset.taginput), inp.value, false); });
+    $$('.invalid', main).forEach(x=>x.classList.remove('invalid'));
+    $('#afterSave').innerHTML = '';
+    const miss = missingFields(e);
+    const box = $('#missing');
+    if(miss.length){
+      miss.forEach(m => { const el = main.querySelector(m.sel); if(el) el.classList.add('invalid'); });
+      st.miss = miss;
+      box.innerHTML = `<div class="notice"><b>Almost there. Still needed:</b><ul>${miss.map((m,k)=>`<li><button type="button" class="linkbtn" data-missgo="${k}">${esc(m.label)}</button></li>`).join('')}</ul>
+        <p class="small" style="margin:8px 0 0">Your progress is saved as a draft, so you can finish later.</p></div>`;
+      if(hasContent(e)) persistEntry();
+      goToField(miss[0]);
+      return;
+    }
+    box.innerHTML = '';
+    persistEntry(); saveNow();
+    const n = labsOf(e).length, w = weekOf(e.date);
+    $('#afterSave').innerHTML = `<div class="notice ok actions-row" style="justify-content:space-between;margin-top:20px">
+      <span><b>Day saved. Nice work!</b> ${n ? `${labsText(n)} logged. When you're ready, turn your labs into resume bullets, a training summary, or interview stories.` : 'Marked as a day without labs.'}</span>
+      ${n ? `<button type="button" class="btn small" data-open="summaries" ${w>0 ? `data-sumweek="${w}"` : ''}>Summaries &amp; bullets</button>` : ''}</div>`;
+    $('#afterSave').scrollIntoView({behavior:'smooth', block:'nearest'});
+    toast('Day saved ✓');
+  }
+}
+
+/* ---------- Prompt builders ---------- */
+const ICON = {
+  summary:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg>',
+  bullets:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h12M9 12h12M9 18h12"/><circle cx="4" cy="6" r="1"/><circle cx="4" cy="12" r="1"/><circle cx="4" cy="18" r="1"/></svg>',
+  star:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>'
+};
+function regPrompt(text){ const id = 'p' + (++st.pid); st.prompts[id] = text; return id; }
+function coursesIn(days){ return [...new Set(days.map(d=>clean(d.course)).filter(Boolean))]; }
+function intro(days, label){
+  const cs = coursesIn(days);
+  return `I'm a student in a 17-week, hands-on IT technical training program. Most of my training follows Microsoft Learn${cs.length ? `, and this material comes from: ${cs.join('; ')}` : ''}. Below are my own notes on the hands-on labs I completed during ${label}. All of this work was done in virtual lab environments.`;
+}
+function labBlock(l, i){
+  const out = [`Lab ${i+1}: ${clean(l.title) || '(untitled lab)'}`];
+  if(clean(l.did) || l.actions.length) out.push(`- What I did${l.actions.length ? ` (${l.actions.join(', ').toLowerCase()})` : ''}: ${clean(l.did) || '(no description)'}`);
+  if(l.techs.length) out.push(`- Technologies and tools: ${l.techs.join(', ')}`);
+  if(clean(l.outcome)) out.push(`- Result and objective: ${clean(l.outcome)}`);
+  if(clean(l.scope)) out.push(`- Scope: ${clean(l.scope)}`);
+  if(clean(l.notes)) out.push(`- My lab notes (steps, commands, problems and fixes): ${clean(l.notes)}`);
+  return out.join('\n');
+}
+function notesBlock(days){
+  return days.filter(d => labsOf(d).length).map(d => {
+    const w = weekOf(d.date);
+    const parts = [`## ${fmtLong(d.date)}${w>0 ? ` (Week ${w})` : ''}${clean(d.course) ? ` · ${clean(d.course)}` : ''}`];
+    labsOf(d).forEach((l,i)=>parts.push(labBlock(l,i)));
+    return parts.join('\n');
+  }).join('\n\n');
+}
+function summaryPrompt(type, days, label){
+  const notes = notesBlock(days);
+  const labCount = days.reduce((n,d)=>n+labsOf(d).length, 0);
+  const nb = Math.max(3, Math.min(12, Math.ceil(labCount/3)));
+  if(type === 'summary') return `${intro(days, label)}
+
+Write a clear, well-organized summary of my technical training, using ONLY the information in my notes. Use this structure:
+1. Overview (2 to 3 sentences): what I focused on and the main skills I practiced.
+2. Skills and technologies: group them by area (for example Cloud/Azure, Identity, Networking, Windows Server, Linux, Automation and DevOps, Endpoint management), and for each area say what I can now do.
+3. Key hands-on labs: the most significant labs and what each one accomplished.
+4. Next steps: areas where my lab work is thinner, with Microsoft Learn topics I could explore to build on it.
+
+Write in first person, and keep it factual. Do not add skills, tools, or results that aren't in my notes. Present it as hands-on training, not job experience.
+
+MY NOTES:
+${notes}`;
+  if(type === 'bullets') return `${intro(days, label)}
+
+Using ONLY the hands-on lab work in my notes, write about ${nb} resume bullets for an entry-level IT, cloud, or systems administration role.
+
+Every bullet must follow this format: Action + Technology + Purpose
+- Action: start with a strong past-tense verb that says what I did (for example Built, Configured, Deployed, Automated, Secured, Troubleshot).
+- Technology: name the specific tools, services, or platforms I used (for example Azure Virtual Network, PowerShell, Microsoft Entra ID, Group Policy).
+- Purpose: end with what the setup accomplished, meaning the business or technical outcome.
+
+Example: Configured Azure Virtual Networks and Network Security Groups to segment workloads and block unauthorized inbound traffic.
+
+Rules:
+1. Only use lab work I actually completed. Never turn ideas or plans into bullets.
+2. Use the scope details (number of servers, users, devices, scripts) to add numbers when they're in my notes. Never invent numbers, tools, or results.
+3. Combine similar labs into one stronger bullet instead of repeating the same skill.
+4. Keep each bullet to one line (about 25 words or fewer) and vary the action verbs.
+5. This work was done in hands-on virtual lab environments during training, so the bullets should fit under a "Technical Training" or "Hands-On Projects" section. Don't present it as paid job experience.
+6. After the bullets, list 8 to 12 keywords for the Skills section of my resume, taken from my notes.
+7. If a bullet would be stronger with a detail I didn't record, ask me about it at the end.
+
+MY NOTES:
+${notes}`;
+  return `${intro(days, label)}
+
+Using ONLY my notes below, write 3 to 5 interview stories in STAR format (Situation, Task, Action, Result) that I can use in IT job interviews.
+
+For each story:
+1. Give it a short title, then write it in 4 to 6 sentences, in first person.
+2. Make clear that it was hands-on lab work during my training (don't present it as a real job).
+3. Mention the specific technologies and the steps I took. If my notes describe a problem I had to troubleshoot, use it, because interviewers love those.
+4. End with the result and what I learned.
+5. Below each story, list 2 interview questions it answers well (for example "Tell me about a time you automated a task" or "How would you secure a virtual network?").
+
+Only use work I actually completed in labs. Don't invent facts. If a story needs a detail I didn't record, ask me at the end.
+
+MY NOTES:
+${notes}`;
+}
+
+/* ---------- Timeline ---------- */
+function renderTimeline(){
+  const days = loggedDays();
+  const today = todayISO(), curW = weekOf(today);
+  const labs = days.reduce((n,d)=>n+labsOf(d).length, 0);
+  const techCount = new Set(days.flatMap(d=>labsOf(d).flatMap(l=>l.techs.map(t=>t.toLowerCase())))).size;
+  const start = mondayOf(S.settings.startDate);
+  let classDaysSoFar = 0;
+  for(let i=0;i<TOTAL_WEEKS*7;i++){ const d = addDays(start,i); if(d>today) break; if(Math.floor(i/7)+1===PRO_DEV_WEEK) continue; const k=dow(d); if(k>=1&&k<=4) classDaysSoFar++; }
+  const pct = classDaysSoFar ? Math.min(100, Math.round(days.filter(d=>dow(d.date)>=1&&dow(d.date)<=4).length/classDaysSoFar*100)) : 0;
+  const weekPct = curW ? Math.max(0, Math.min(100, Math.round(Math.min(curW,TOTAL_WEEKS)/TOTAL_WEEKS*100))) : 0;
+
+  let weeksHTML = '';
+  for(let w=1; w<=TOTAL_WEEKS; w++){
+    const ws = weekStart(w);
+    if(w === PRO_DEV_WEEK){
+      weeksHTML += `<div class="week-prodev ${w===curW?'current':''}"><span class="week-title">Week ${w}<span>${fmtMD(ws)} to ${fmtMD(addDays(ws,4))}</span></span><span class="pill purple">Pro-Dev Week · not tracked</span></div>`;
+      continue;
+    }
+    const wd = weekDays(w);
+    const logged = wd.filter(d=>hasContent(S.days[d])).length;
+    const wlabs = wd.reduce((n,d)=>n+(S.days[d]?labsOf(S.days[d]).length:0),0);
+    const future = ws > today;
+    const rows = wd.map(d=>{
+      const e = S.days[d];
+      const status = !hasContent(e) ? (d>today?'<span class="pill">Upcoming</span>':'<span class="pill">Not logged</span>') : isComplete(e) ? '<span class="pill ok">Complete</span>' : '<span class="pill draft">Draft</span>';
+      return `<button class="dayrow" data-goto="${d}"><b>${esc(fmtShort(d))}</b><span class="c">${esc(e&&hasContent(e)?dayLabelText(e):'')}</span><span class="labs small muted">${labsText(e?labsOf(e).length:0)}</span>${status}</button>`;
+    }).join('');
+    weeksHTML += `<details class="week ${w===curW?'current':''} ${future?'future':''}" ${w===curW || (curW>TOTAL_WEEKS && w===TOTAL_WEEKS) ? 'open':''}>
+      <summary><span class="week-title">Week ${w}<span>${fmtMD(ws)} to ${fmtMD(addDays(ws,3))}</span></span>
+        <span class="actions-row" style="gap:6px">${w===curW?'<span class="pill purple">This week</span>':''}<span class="pill">${logged}/4 days</span><span class="pill">${labsText(wlabs)}</span></span></summary>
+      <div class="dayrows">${rows}</div></details>`;
+  }
+  main.innerHTML = `<div class="stack">
+    <section class="tiles">
+      <div class="tile"><div class="num">${curW<1?'–':Math.min(curW,TOTAL_WEEKS)}<span class="muted" style="font-size:1rem"> / ${TOTAL_WEEKS}</span></div><div class="lbl">Week of training</div><div class="progress"><div style="width:${weekPct}%"></div></div></div>
+      <div class="tile"><div class="num">${days.length}</div><div class="lbl">Days logged · ${pct}% of class days so far</div><div class="progress"><div style="width:${pct}%"></div></div></div>
+      <div class="tile"><div class="num">${labs}</div><div class="lbl">Labs logged</div></div>
+      <div class="tile"><div class="num">${techCount}</div><div class="lbl">Technologies used</div></div>
+    </section>
+    ${weeksHTML}
+  </div>`;
+  main.onclick = e => { const g = e.target.closest('[data-goto]'); if(g){ st.cur = g.dataset.goto; setView('today'); } };
+}
+
+/* ---------- Summaries & bullets ---------- */
+/* ---------- Exports: PDF training record (private) and GitHub README (public) ---------- */
+function techCounts(days){
+  const m = new Map();
+  days.forEach(d=>labsOf(d).forEach(l=>l.techs.forEach(t=>{ const k=t.toLowerCase(); const v=m.get(k)||{name:t,n:0}; v.n++; m.set(k,v); })));
+  return [...m.values()].sort((a,b)=>b.n-a.n || a.name.localeCompare(b.name));
+}
+// Skill groups for exports. Rules are checked top to bottom; the first match wins.
+const SKILL_ORDER = ['Cloud & Virtualization','Server & Identity','Networking & Security','Automation & Operations','DevOps & Version Control','Endpoint Management','AI','Other tools'];
+const SKILL_RULES = [
+  ['AI', /\b(ai|openai|copilot|machine learning|cognitive services|computer vision|speech|language studio|document intelligence|bot service)\b/i],
+  ['DevOps & Version Control', /\b(git|github|gitlab|pull requests?|azure devops|azure pipelines|azure repos|azure boards|ci\/cd|yaml|markdown|visual studio code|vs code|terraform|ansible|json|infrastructure as code|iac)\b/i],
+  ['Networking & Security', /\b(dns|dhcp|tcp\/?ip|ipv[46]|subnets?|subnetting|vlans?|vpn|ikev2|firewalls?|nsgs?|network security groups?|load balancers?|application gateway|front door|bastion|routing|remote access|nslookup|ping|tracert|ssh|openssh|ssh-keygen|defender|sentinel|key vault|tls|ssl|certificates?|pki|wireshark|nmap|ddos|waf|private endpoints?|expressroute|peering|security|ufw|iptables|netplan|ipam|nps|radius|branchcache)\b/i],
+  ['Endpoint Management', /\b(intune|autopilot|configuration manager|sccm|mecm|endpoint|windows 1[01]|windows client|bitlocker|windows update for business|company portal|mdm|mam|compliance polic(?:y|ies)|app protection|android|ios|ipados|macos|settings catalog|remote actions?|win32|microsoft 365 apps)\b/i],
+  ['Server & Identity', /\b(windows server|server core|active directory|ad ds|ad cs|ad fs|group policy|gpos?|gpresult|gpupdate|entra|azure ad|rbac|role-based|conditional access|mfa|multifactor|identity|sconfig|server manager|windows admin center|iis|storage spaces|refs|ntfs|iscsi|file server|dfs|failover cluster(?:ing)?|kerberos|ldap|rodc|dsrm|ntdsutil|repadmin|resultant set of policy|rsop|disk management|wbadmin|administrative units?|dynamic groups?|access reviews?|entitlement management|privileged identity|pim|self-service password reset|sspr|password hash sync|password writeback|pass-through authentication|authenticator|passkeys?|fido2|saml|single sign-on|sso|oauth|enterprise applications?|app registrations?|microsoft graph|named locations?|sign-in logs?|audit logs?|custom domains?)\b/i],
+  ['Cloud & Virtualization', /\b(azure|aws|gcp|cloud|hyper-v|vmware|virtual machines?|vms?|containers?|docker|kubernetes|aks|arm templates?|bicep|virtualization|checkpoints?|log analytics|kql|microsoft 365|m365|virtual switch(?:es)?|management groups?|resource locks?|tags|blob|availability (?:zones?|sets?)|autoscale|scale sets?|deployment slots?|recovery services|shared access signatures?|az module|alerts?|action groups?|lifecycle management)\b/i],
+  ['Automation & Operations', /\b(powershell|bash|shell|scripts?|scripting|cron|crontab|task scheduler|winrm|csv|linux|ubuntu|apt|systemd|systemctl|chmod|chown|useradd|usermod|grep|find|tar|sed|awk|vim|nano|nginx|apache|python|backups?|monitoring|patch|patching|updates?|wsus|event viewer|performance monitor|journalctl|sudo|visudo|pssessions?|scheduled tasks?|try\/catch)\b/i],
+];
+function skillGroup(name){
+  if(/^[A-Z][a-z]+-[A-Z][A-Za-z]+$/.test(name.trim())) return 'Automation & Operations'; // PowerShell cmdlets (Verb-Noun)
+  const hit = SKILL_RULES.find(([, re]) => re.test(name));
+  return hit ? hit[0] : 'Other tools';
+}
+function groupSkills(techs){
+  const g = new Map();
+  techs.forEach(t => { const k = skillGroup(t.name); if(!g.has(k)) g.set(k, []); g.get(k).push(t); });
+  return SKILL_ORDER.filter(k => g.has(k)).map(k => ({group:k, items:g.get(k)}));
+}
+function weeksIn(days){ return [...new Set(days.map(d=>weekOf(d.date)))].sort((a,b)=>a-b); }
+const oneLine = s => clean(s).replace(/\s*\r?\n\s*/g, ' ');
+const exportPeriod = label => label === 'my training so far' ? 'All training to date' : label.replace(/^my /,'').replace(/^./, c=>c.toUpperCase());
+
+function buildMarkdown(days, label){
+  const labDays = days.filter(d => labsOf(d).length);
+  const nLabs = labDays.reduce((n,d)=>n+labsOf(d).length, 0);
+  const techs = techCounts(days);
+  const courses = coursesIn(labDays);
+  const out = [];
+  out.push('# Hands-On IT Training Portfolio', '');
+  out.push(`Hands-on lab work from a 17-week, full-time IT technical training program aligned to Microsoft Learn. All work below was completed in virtual lab environments.`, '');
+  out.push(`**Labs completed:** ${nLabs}  `);
+  out.push(`**Technologies used:** ${techs.length}  `);
+  if(label !== 'my training so far') out.push(`**Period:** ${exportPeriod(label)}  `);
+  if(courses.length) out.push(`**Courses:** ${courses.join(' · ')}`);
+  out.push('');
+  if(techs.length){
+    out.push('## Skills and technologies', '');
+    groupSkills(techs).forEach(g => out.push(`- **${g.group}:** ${g.items.map(t=>t.name).join(', ')}`));
+    out.push('');
+  }
+  if(S.bullets.length){
+    out.push('## Highlights', '');
+    S.bullets.forEach(b => out.push(`- ${oneLine(b.text)}`));
+    out.push('');
+  }
+  if(labDays.length){
+    out.push('## Lab log', '');
+    weeksIn(labDays).forEach(w => {
+      const wd = labDays.filter(d=>weekOf(d.date)===w);
+      const wc = coursesIn(wd);
+      out.push(`### ${w>0 ? `Week ${w}` : 'Before week 1'}${wc.length ? ` · ${wc.join(' · ')}` : ''}`, '');
+      wd.forEach(d => labsOf(d).forEach(l => {
+        out.push(`#### ${oneLine(l.title) || 'Untitled lab'}`, '');
+        out.push(`*${fmt(d.date,{month:'long',day:'numeric',year:'numeric'})}*`, '');
+        if(clean(l.did)) out.push(`- **What I did:** ${oneLine(l.did)}`);
+        if(l.techs.length) out.push(`- **Technologies:** ${l.techs.join(', ')}`);
+        if(clean(l.outcome)) out.push(`- **Result:** ${oneLine(l.outcome)}`);
+        if(clean(l.scope)) out.push(`- **Scope:** ${oneLine(l.scope)}`);
+        out.push('');
+      }));
+    });
+  }
+  out.push('---', '', `*Last updated ${fmt(todayISO(),{month:'long',day:'numeric',year:'numeric'})}*`, '');
+  return out.join('\n');
+}
+function downloadText(text, filename, type){
+  const blob = new Blob([text], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+}
+
+function recordHTML(days, label){
+  const techs = techCounts(days);
+  const nLabs = days.reduce((n,d)=>n+labsOf(d).length, 0);
+  const list = items => items.length ? `<ul>${items.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>` : '';
+  const para = (lbl, txt) => clean(txt) ? `<p><b>${lbl}</b> ${esc(clean(txt)).replace(/\n/g,'<br>')}</p>` : '';
+  let h = `<header class="pr-head"><h1>Training Record</h1>
+    <p>${esc(exportPeriod(label))} · Created ${esc(fmt(todayISO(),{month:'long',day:'numeric',year:'numeric'}))}</p>
+    <p>${days.length} day${days.length===1?'':'s'} with labs · ${labsText(nLabs)} · ${techs.length} technolog${techs.length===1?'y':'ies'}</p></header>`;
+  if(techs.length) h += `<section class="pr-sec"><h2>Technologies used</h2>${groupSkills(techs).map(g=>`<p><b>${esc(g.group)}:</b> ${g.items.map(t=>`${esc(t.name)} (${t.n})`).join(', ')}</p>`).join('')}</section>`;
+  weeksIn(days).forEach(w => {
+    const wd = days.filter(d=>weekOf(d.date)===w);
+    h += `<section class="pr-sec"><h2>${w>0 ? `Week ${w}` : 'Before week 1'}${w>0 ? ` <span>${esc(fmtMD(weekStart(w)))} to ${esc(fmtMD(addDays(weekStart(w),3)))}</span>` : ''}</h2>`;
+    wd.forEach(d => {
+      h += `<div class="pr-day"><h3>${esc(fmtLong(d.date))}${clean(d.course) ? ` · ${esc(d.course)}` : ''}</h3>`;
+      labsOf(d).forEach((l,i) => {
+        h += `<div class="pr-lab"><h4>Lab ${i+1}: ${esc(clean(l.title) || 'Untitled lab')}</h4>`
+          + para(`What I did${l.actions.length ? ` (${esc(l.actions.join(', ').toLowerCase())})` : ''}:`, l.did)
+          + (l.techs.length ? `<p><b>Technologies:</b> ${esc(l.techs.join(', '))}</p>` : '')
+          + para('Result and objective:', l.outcome) + para('Scope:', l.scope) + para('Lab notes:', l.notes) + `</div>`;
+      });
+      h += `</div>`;
+    });
+    h += `</section>`;
+  });
+  if(S.bullets.length) h += `<section class="pr-sec"><h2>My resume bullets</h2>${list(S.bullets.map(b=>oneLine(b.text)))}</section>`;
+  return h;
+}
+function printRecord(days, label){
+  let area = document.getElementById('printArea');
+  if(!area){ area = document.createElement('div'); area.id = 'printArea'; document.body.appendChild(area); }
+  area.innerHTML = recordHTML(days, label);
+  const oldTitle = document.title;
+  document.title = `Training Record - ${exportPeriod(label)}`;
+  const restore = () => { document.title = oldTitle; window.removeEventListener('afterprint', restore); };
+  window.addEventListener('afterprint', restore);
+  window.print();
+  setTimeout(restore, 1500);
+}
+
+function renderSummaries(){
+  const all = loggedDays().filter(d => labsOf(d).length);   // prompts and exports only use days with labs
+  const weeks = [...new Set(all.map(d=>weekOf(d.date)))].filter(w=>w>0).sort((a,b)=>a-b);
+  const courses = coursesIn(all);
+  if(!st.sumWeek && weeks.length) st.sumWeek = String(weeks[weeks.length-1]);
+  if(!st.sumCourse && courses.length) st.sumCourse = courses[0];
+  if(!st.sumFrom && all.length){ st.sumFrom = all[0].date; st.sumTo = all[all.length-1].date; }
+
+  let days = all, label = 'my training so far';
+  if(st.sumRange==='week'){ const w = Number(st.sumWeek); days = all.filter(d=>weekOf(d.date)===w); label = `week ${w} of my training`; }
+  if(st.sumRange==='course'){ days = all.filter(d=>d.course===st.sumCourse); label = `my ${st.sumCourse} course`; }
+  if(st.sumRange==='range'){ days = all.filter(d=>d.date>=st.sumFrom && d.date<=st.sumTo); label = `${st.sumFrom ? fmtLong(st.sumFrom):''} to ${st.sumTo ? fmtLong(st.sumTo):''}`; }
+
+  const types = [['bullets','Resume bullets',ICON.bullets,'c-teal'],['summary','Training summary',ICON.summary,'c-blue'],['star','Interview stories (STAR)',ICON.star,'c-purple']];
+  let promptHTML = '';
+  if(days.length){
+    const text = summaryPrompt(st.sumType, days, label);
+    const id = regPrompt(text);
+    const long = text.length > 12000;
+    promptHTML = `<section class="card">
+      <div class="card-head"><h3>Your prompt</h3><span class="charcount ${long?'warn':''}">${text.length.toLocaleString()} characters${long?' · may be too long for some AI tools. Try a smaller range.':''}</span></div>
+      <pre class="prompt" style="max-height:280px">${esc(text)}</pre>
+      <div class="actions-row" style="margin-top:12px"><button class="btn primary" data-copy="${id}">Copy prompt</button><span class="muted small">Paste it into your AI tool. ${st.sumType==='bullets' ? 'Then save the bullets you like below.' : ''}</span></div>
+    </section>`;
+  }
+
+  // At a glance
+  const techMap = new Map(), actMap = new Map();
+  days.forEach(d=>labsOf(d).forEach(l=>{ l.techs.forEach(t=>{ const k=t.toLowerCase(); const v=techMap.get(k)||{name:t,n:0}; v.n++; techMap.set(k,v); }); l.actions.forEach(a=>actMap.set(a,(actMap.get(a)||0)+1)); }));
+  const topTech = [...techMap.values()].sort((a,b)=>b.n-a.n).slice(0,18);
+  const nLabs = days.reduce((n,d)=>n+labsOf(d).length,0);
+
+  let exportHTML = '';
+  if(days.length){
+    const md = buildMarkdown(days, label);
+    const mdId = regPrompt(md);
+    exportHTML = `<section class="card">
+      <div class="card-head"><h3>Export your training</h3><span class="muted small">Uses "What to include" above</span></div>
+      <div class="prompt-grid">
+        <div class="pcard"><div class="pcard-top"><div class="pcard-icon c-blue">${ICON.summary}</div><h3>Training record (PDF)</h3></div>
+          <p>Every lab you logged in this range, including your lab notes and saved bullets, in a clean printable layout. <b>Private:</b> for you, a career coach, or interview prep.</p>
+          <p class="small" style="color:var(--teal);font-weight:600">In the print window, choose "Save as PDF" as the printer.</p>
+          <div class="actions-row"><button class="btn primary small" id="exportPdf">Create PDF</button></div></div>
+        <div class="pcard"><div class="pcard-top"><div class="pcard-icon c-purple">${ICON.bullets}</div><h3>GitHub portfolio (README.md)</h3></div>
+          <p>Your hands-on labs, technologies, and saved resume bullets, ready to post on GitHub. <b>Public-ready:</b> leaves out your lab notes.</p>
+          <pre class="prompt" id="pre-${mdId}" hidden>${esc(md)}</pre>
+          <div class="actions-row"><button class="btn primary small" id="exportMd">Download README.md</button><button class="btn small" data-preview="pre-${mdId}">Preview</button><button class="btn small" data-copy="${mdId}">Copy</button></div></div>
+      </div>
+      <details class="examples" style="margin-top:12px"><summary>How to post it on GitHub</summary><ul>
+        <li>Read the preview first. Everything in this file will be public, so edit or remove anything you don't want to share.</li>
+        <li>On GitHub, create a new repository, for example <b>it-training-portfolio</b>.</li>
+        <li>Click <b>Add file</b>, then <b>Upload files</b>, drag in <b>README.md</b>, and click <b>Commit changes</b>.</li>
+        <li>GitHub shows README.md on the repository's front page. To update it later, download a new README.md and upload it the same way.</li>
+      </ul></details>
+    </section>`;
+  } else {
+    exportHTML = `<section class="card">
+      <div class="card-head"><h3>Export your training</h3></div>
+      <p class="muted small" style="margin:0">${all.length ? 'No labs are logged in the range chosen under "What to include". Pick a different range to export it.' : 'Once you log a lab, you can export your training here as a <b>PDF training record</b> (private) or a <b>README.md</b> portfolio file for GitHub.'}</p>
+    </section>`;
+  }
+
+  main.innerHTML = `<div class="stack">
+    <section class="card">
+      <h2>Summaries &amp; resume bullets</h2>
+      <p class="lede">The app pulls together the labs you've logged and writes a prompt for your AI tool. Your AI tool does the writing; your lab answers keep it accurate.</p>
+      ${all.length ? `
+      <div class="controls" style="margin-top:14px">
+        <div><span class="q small">What to include</span><div class="seg" role="group">${[['all','Everything'],['week','A week'],['course','A course'],['range','Date range']].map(([k,l])=>`<button data-range="${k}" aria-pressed="${st.sumRange===k}">${l}</button>`).join('')}</div></div>
+        ${st.sumRange==='week' ? `<label class="field"><span class="q small">Week</span><select id="sumWeek">${weeks.map(w=>`<option value="${w}" ${String(w)===st.sumWeek?'selected':''}>Week ${w}</option>`).join('')}</select></label>` : ''}
+        ${st.sumRange==='course' ? `<label class="field"><span class="q small">Course</span><select id="sumCourse">${courses.length?courses.map(c=>`<option ${c===st.sumCourse?'selected':''}>${esc(c)}</option>`).join(''):'<option>No courses chosen yet</option>'}</select></label>` : ''}
+        ${st.sumRange==='range' ? `<label class="field" style="min-width:150px"><span class="q small">From</span><input type="date" id="sumFrom" value="${st.sumFrom}"></label><label class="field" style="min-width:150px"><span class="q small">To</span><input type="date" id="sumTo" value="${st.sumTo}"></label>` : ''}
+      </div>
+      <div style="margin-top:14px"><span class="q small">What do you want?</span>
+        <div class="prompt-grid" style="grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:10px">${types.map(([k,l,ic,c])=>`<button class="pcard" data-type="${k}" aria-pressed="${st.sumType===k}" style="cursor:pointer;text-align:left;flex-direction:row;align-items:center;padding:12px;${st.sumType===k?'border-color:var(--teal);box-shadow:0 0 0 2px color-mix(in srgb,var(--teal) 30%,transparent)':''}"><span class="pcard-icon ${c}">${ic}</span><b>${l}</b></button>`).join('')}</div>
+      </div>` : `<div class="notice info" style="margin-top:12px">No labs logged yet. Once you log a few labs, you can build summaries and bullets here.</div>`}
+    </section>
+    ${all.length ? (days.length ? `
+    <section class="card">
+      <div class="card-head"><h3>At a glance</h3><span class="muted small">${days.length} day${days.length===1?'':'s'} · ${labsText(nLabs)}</span></div>
+      ${topTech.length ? `<div class="chips">${topTech.map(t=>`<span class="tag static">${esc(t.name)} · ${t.n}</span>`).join('')}</div>` : '<p class="muted small">No technologies recorded in this range yet.</p>'}
+      ${actMap.size ? `<p class="muted small" style="margin:8px 0 0">${[...actMap.entries()].sort((a,b)=>b[1]-a[1]).map(([a,n])=>`${a} ×${n}`).join(' · ')}</p>` : ''}
+    </section>
+    ${promptHTML}` : `<div class="card muted">No labs logged in this range.</div>`) : ''}
+    <section class="card">
+      <div class="card-head"><h3>My resume bullets</h3>${S.bullets.length?`<button class="btn small" id="copyAll">Copy all</button>`:''}</div>
+      <p class="lede small" style="margin-top:-6px">Paste the bullets you like from your AI tool here (one per line) so they stay with your training record.</p>
+      <textarea id="newBullets" rows="3" style="margin-top:10px" placeholder="Configured Azure Virtual Networks and Network Security Groups to segment workloads and block unauthorized inbound traffic."></textarea>
+      <div class="actions-row" style="margin-top:10px"><button class="btn primary small" id="addBullets">Save bullets</button></div>
+      ${S.bullets.length ? `<ul class="bullet-list">${S.bullets.map((b,i)=>`<li><span class="t">${esc(b.text)}</span><button class="btn ghost small" data-cpb="${i}">Copy</button><button class="btn ghost small danger" data-rmb="${i}" aria-label="Delete bullet">Delete</button></li>`).join('')}</ul>` : ''}
+    </section>
+    ${exportHTML}
+  </div>`;
+
+  main.onclick = e => {
+    const t = e.target;
+    const r = t.closest('[data-range]'); if(r){ st.sumRange = r.dataset.range; return renderSummaries(); }
+    const ty = t.closest('[data-type]'); if(ty){ st.sumType = ty.dataset.type; return renderSummaries(); }
+    if(t.id === 'exportPdf') return printRecord(days, label);
+    if(t.id === 'exportMd'){ downloadText(buildMarkdown(days, label), 'README.md', 'text/markdown'); return toast('README.md downloaded. Review it before posting to GitHub.'); }
+    if(t.id === 'addBullets'){
+      const lines = linesOf($('#newBullets').value);
+      if(!lines.length) return;
+      lines.forEach(x=>S.bullets.push({text:x, created:Date.now()})); saveNow(); renderSummaries();
+      toast(`${lines.length} bullet${lines.length>1?'s':''} saved`); return;
+    }
+    if(t.id === 'copyAll'){ st.prompts.__all = S.bullets.map(b=>'• '+b.text).join('\n'); return copyText(st.prompts.__all); }
+    const c = t.closest('[data-cpb]'); if(c) return copyText(S.bullets[Number(c.dataset.cpb)].text);
+    const d = t.closest('[data-rmb]'); if(d){ if(confirm('Delete this bullet?')){ S.bullets.splice(Number(d.dataset.rmb),1); saveNow(); renderSummaries(); } }
+  };
+  main.onchange = e => {
+    const t = e.target;
+    if(t.id==='sumWeek') st.sumWeek = t.value;
+    else if(t.id==='sumCourse') st.sumCourse = t.value;
+    else if(t.id==='sumFrom') st.sumFrom = t.value;
+    else if(t.id==='sumTo') st.sumTo = t.value;
+    else return;
+    renderSummaries();
+  };
+}
+
+/* ---------- Settings ---------- */
+function exportData(){
+  saveNow();
+  S.settings.lastBackup = Date.now();
+  const blob = new Blob([JSON.stringify(S, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `from-labs-to-bullets-lite-backup-${todayISO()}.json`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 2000);
+  saveNow(); toast('Backup downloaded. Keep it somewhere safe, like OneDrive.');
+  if(st.view==='settings') renderSettings();
+  else if(st.view==='today'){ const n = main.querySelector('.notice [data-export]'); if(n) n.closest('.notice').remove(); }
+}
+function importFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    let data;
+    try { data = JSON.parse(reader.result); } catch(e){ return toast("That file isn't a valid backup."); }
+    if(!data || typeof data!=='object' || !data.days || !data.settings) return toast("That file isn't a From Labs to Bullets backup.");
+    const fromFull = isFullAppFile(data);
+    const next = normalize(data);
+    const n = Object.keys(next.days).length;
+    const what = fromFull
+      ? `This backup is from the full From Labs to Bullets app. Lite will bring over its labs (${n} day${n===1?'':'s'} with labs) and saved bullets. Class notes, study prompts, weekly reviews and mock interviews are left out. The backup file itself won't be changed.`
+      : `Restore this backup (${n} day${n===1?'':'s'})?`;
+    if(!confirm(loggedDays().length ? `${what}\n\nThe diary in this browser will be replaced.` : what)) return;
+    S = next; saveNow(); toast(`Backup restored: ${n} day${n===1?'':'s'}`); setView(S.settings.startDate ? 'timeline' : 'today');
+  };
+  reader.readAsText(file);
+}
+function renderSettings(){
+  const last = S.settings.lastBackup;
+  main.innerHTML = `<div class="stack">
+    <section class="card">
+      <h2>Training setup</h2>
+      <label class="field" style="margin-top:12px"><span class="q">Training start date</span>
+        <span class="hint">Your first day of class. Week numbers are counted from here.</span>
+        <input type="date" id="setStart" value="${S.settings.startDate}" style="max-width:220px"></label>
+      <label class="field"><span class="q">Courses and modules</span>
+        <span class="hint">One per line. These appear in the "Course or module" list on your lab log.</span>
+        <textarea id="setCourses" rows="8">${esc(S.settings.courses.join('\n'))}</textarea></label>
+      <div class="actions-row"><button class="btn primary" id="saveSettings">Save setup</button><button class="btn ghost small" id="resetCourses">Restore default course list</button></div>
+    </section>
+    <section class="card">
+      <h2>Auto-save to a file</h2>
+      ${FS_OK ? `<p class="lede">Saves your diary to a file on your computer every time you type, so clearing Edge's data never erases your work. Keep the file in your <b>OneDrive</b> folder and it's backed up online too.</p>
+      <p class="small" id="fileStatus" style="margin:12px 0">${fileStatusHTML()}</p>
+      <div class="actions-row">
+        ${AS.state === 'off' ? '<button class="btn primary" data-fs="on">Turn on auto-save</button><button class="btn" data-fs="open">Open my diary file</button>' : ''}
+        ${AS.state === 'paused' ? '<button class="btn primary" data-fs="resume">Resume auto-save</button>' : ''}
+        ${AS.state === 'problem' ? '<button class="btn primary" data-fs="open">Find my file</button><button class="btn" data-fs="on">Save to a new file</button>' : ''}
+        ${AS.state === 'on' ? '<button class="btn" data-fs="on">Save to a different file</button>' : ''}
+        ${AS.state !== 'off' ? '<button class="btn ghost small" data-fs="off">Turn off auto-save</button>' : ''}
+      </div>
+      ${AS.state === 'off' ? `<p class="small muted" style="margin:12px 0 0"><b>New computer, or Edge's data was cleared?</b> Click <b>Open my diary file</b> and choose your file. Everything comes back, up to the last thing you typed.</p>` : ''}`
+      : '<p class="lede">Auto-save needs Microsoft Edge or Google Chrome on a computer. In this browser, download a backup every Friday instead.</p>'}
+    </section>
+    <section class="card">
+      <h2>Backup &amp; restore</h2>
+      <p class="lede">${AS.state === 'on' ? 'Auto-save keeps your diary file up to date. You can still download an extra copy any time.' : 'Download a backup every Friday and keep it in OneDrive or another safe place. You can restore it on a new laptop too.'}</p>
+      <p class="small muted">${last ? `Last backup: ${new Date(last).toLocaleString()}` : 'No backup downloaded yet.'}</p>
+      <div class="actions-row">
+        <button class="btn primary" data-export>Download backup</button>
+        <label class="btn" style="cursor:pointer">Restore from file<input type="file" id="importS" accept="application/json,.json" hidden></label>
+      </div>
+      ${storageOK ? '' : '<div class="notice" style="margin-top:12px">This browser is blocking storage, so entries may not be saved between visits. Download a backup before you close the page.</div>'}
+    </section>
+    <section class="card">
+      <h2>Start over</h2>
+      <p class="lede">Permanently erase every lab and saved bullet from this browser.</p>
+      <div class="actions-row" style="margin-top:12px"><button class="btn danger" id="wipe">Erase all my data</button></div>
+    </section>
+  </div>`;
+  main.onclick = e => {
+    const t = e.target;
+    if(t.closest('[data-export]')) return exportData();
+    if(t.id === 'saveSettings'){
+      const sd = $('#setStart').value;
+      if(!isValidISO(sd)){ $('#setStart').classList.add('invalid'); return toast('Please choose a start date.'); }
+      const cs = linesOf($('#setCourses').value);
+      S.settings.startDate = sd; S.settings.courses = cs.length ? cs : DEFAULT_COURSES.slice();
+      saveNow(); updateBadge(); toast('Setup saved');
+    }
+    if(t.id === 'resetCourses'){ $('#setCourses').value = DEFAULT_COURSES.join('\n'); }
+    if(t.id === 'wipe'){
+      const fileNote = AS.handle ? ` Auto-save will be turned off, but your file (${AS.handle.name}) will not be deleted.` : '';
+      if(confirm(`Erase ALL your labs and bullets from this browser? This cannot be undone. (Tip: download a backup first.)${fileNote}`) && confirm('Are you sure? Everything will be deleted.')){
+        // Turn off auto-save first, so the empty diary is never written over the file.
+        turnOffAutoSave(true).then(() => { S = fresh(); saveNow(); st.cur = todayISO(); setView('today'); toast('All data erased'); });
+      }
+    }
+  };
+  $('#importS').onchange = e => importFile(e.target.files[0]);
+}
+
+/* ---------- Boot ---------- */
+setView('today');
+refreshFileUI(false);
+initAutoSave().then(() => refreshFileUI(false));
+})();
+</script>
+</body>
+</html>
